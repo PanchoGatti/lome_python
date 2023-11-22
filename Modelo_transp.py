@@ -78,8 +78,12 @@ for nombre_hoja, datos in datos_excel.items():
         
         TSj = generar_matriz(numeric_arrays[1])
         Ik = generar_matriz(numeric_arrays[2])
+        
+        m = len(numeric_arrays[2])
+        Cik = np.zeros((n,m))
+        Cik = np.tile(numeric_arrays[0], (m,1))
+        
        
-        # print(TSj)
         
         # while values_list and (pd.isnull(values_list[0]) or isinstance(values_list[0], str)):
         #         values_list.pop(0)
@@ -168,19 +172,18 @@ print("Vector resultante:", vector_resultante)
 # Multiplicación escalar entre los dos vectores
 resultado_multiplicacion = np.dot(vector_resultante, C)
 
-# Mostrar el resultado de la multiplicación escalar
-print("Resultado de la multiplicación escalar:", resultado_multiplicacion)
-
 primer_termino = resultado_multiplicacion*INVTSj
-print(primer_termino)
+print("Resultado del primer término:", primer_termino)
 
-#HASTA ACÁ LLEGA EL PRIMER TÉRMINO, ARRANCA EL SEGUNDO. SE TOMAN VARIAS VARIABLES YA DEFINIDAS###
+
+#####HASTA ACÁ LLEGA EL PRIMER TÉRMINO, ARRANCA EL SEGUNDO. SE TOMAN VARIAS VARIABLES YA DEFINIDAS###
 
 # Mostrar el vector resultante calculado anteriormente, de hacer Xij(A) * Aij(B)
 print("Resultado final (Escalar entre Xij y Aij):", resultado_final)
 
 segundo_termino = resultado_final*OPTSj
-print(segundo_termino)
+
+print("Resultado del segundo término:", segundo_termino)
 
 #HASTA ACÁ LLEGA EL SEGUNDO TÉRMINO, ARRANCA EL TERCERO. SE TOMAN VARIAS VARIABLES YA DEFINIDAS###
 
@@ -190,7 +193,7 @@ matriz_resultante = np.tile(vector_resultante, (cantidad_de_ks, 1)).T
 Bjk = matriz_resultante
 
 # Mostrar la matriz resultante
-print("Matriz resultante:")
+print("Matriz resultante BJK:")
 print(Bjk)
 
 Yjk = [
@@ -253,11 +256,76 @@ resultado_multiplicacion = np.dot(vector_resultante, C)
 # Mostrar el resultado de la multiplicación escalar
 print("Resultado de la multiplicación escalar:", resultado_multiplicacion)
 
-primer_termino = resultado_multiplicacion*INVLk
-print(primer_termino)
+tercer_termino = resultado_multiplicacion*INVLk
+print("Resultado del tercer término:", tercer_termino)
 
 ######HASTA ACA TERCER TERMINO############
 
+matriz_transpuesta = list(map(list, zip(*Cik)))
 
+Zik = [
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0]
+]
 
+A = np.array(Zik)
+B = np.array(matriz_transpuesta)
+C = np.array(Ik)
+
+# Obtener el número de columnas de la matriz
+num_filasA, num_columnasA = A.shape
+
+# Iterar sobre cada columna
+for i in range(num_columnasA):
+    columna_actualA = A[:, i]
+    #print(f"Columna {i + 1}: {columna_actualA}")
     
+    # Obtener el número de columnas de la matriz
+num_filasB, num_columnasB = B.shape
+
+# Iterar sobre cada columna
+for i in range(num_columnasB):
+    columna_actualB = B[:, i]
+    #print(f"Columna {i + 1}: {columna_actualB}")
+    
+    # Verificar si las matrices tienen la misma forma
+if A.shape != B.shape:
+    print("Las matrices no tienen la misma forma.")
+else:
+    n_columnas = A.shape[1]
+    productos = []
+    
+     # Calcular el producto escalar entre las columnas correspondientes
+    for i in range(n_columnas):
+        columna_matriz_1 = A[:, i]
+        columna_matriz_2 = B[:, i]
+        producto_escalar = np.dot(columna_matriz_1, columna_matriz_2)
+        productos.append(producto_escalar)
+        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
+
+    # Sumar los productos escalares individuales para obtener el resultado final
+    resultado_final = sum(productos)
+    print("\nResultado final del producto escalar entre las columnas:", resultado_final)
+    
+    # Convertir la lista de productos a un arreglo NumPy
+vector_resultante = np.array(productos)
+
+# Mostrar el vector resultante
+print("Vector resultante:", vector_resultante)
+
+# Multiplicación escalar entre los dos vectores
+resultado_multiplicacion = np.dot(vector_resultante, C)
+
+# Mostrar el resultado de la multiplicación escalar
+print("Resultado de la multiplicación escalar:", resultado_multiplicacion)
+
+cuarto_termino = resultado_multiplicacion*INVLk
+print("Resultado del cuarto término:", cuarto_termino)
+
+
+#################################HASTA ACÁ CUARTO TÉRMINO#############################
+
+
+
