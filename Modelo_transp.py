@@ -106,14 +106,72 @@ matriz_transpuesta = list(map(list, zip(*Aij)))
 A = np.array(Xij)
 
 B = np.array(matriz_transpuesta)
+
+C = np.array(TSj)
+
 # Calcular el producto escalar
-producto_escalar = np.sum(A * B)
+producto_escalar = np.sum(A * B* C)
 
 print("Matriz A:")
 print(A)
 print("\nMatriz B:")
 print(B)
+print("\nMatriz C:")
+print(C)
 print("\nEl producto escalar de las matrices A y B es:", producto_escalar)
+
+###################################################### HASTA ACA HIZO TINO 22/11 17HS###################3
+# Obtener el número de columnas de la matriz
+num_filasA, num_columnasA = A.shape
+
+# Iterar sobre cada columna
+for i in range(num_columnasA):
+    columna_actualA = A[:, i]
+    #print(f"Columna {i + 1}: {columna_actualA}")
+    
+    # Obtener el número de columnas de la matriz
+num_filasB, num_columnasB = B.shape
+
+# Iterar sobre cada columna
+for i in range(num_columnasB):
+    columna_actualB = B[:, i]
+    #print(f"Columna {i + 1}: {columna_actualB}")
+    
+    # Verificar si las matrices tienen la misma forma
+if A.shape != B.shape:
+    print("Las matrices no tienen la misma forma.")
+else:
+    n_columnas = A.shape[1]
+    productos = []
+    
+     # Calcular el producto escalar entre las columnas correspondientes
+    for i in range(n_columnas):
+        columna_matriz_1 = A[:, i]
+        columna_matriz_2 = B[:, i]
+        producto_escalar = np.dot(columna_matriz_1, columna_matriz_2)
+        productos.append(producto_escalar)
+        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
+
+    # Sumar los productos escalares individuales para obtener el resultado final
+    resultado_final = sum(productos)
+    print("\nResultado final del producto escalar entre las columnas:", resultado_final)
+    
+    # Convertir la lista de productos a un arreglo NumPy
+vector_resultante = np.array(productos)
+
+# Mostrar el vector resultante
+print("Vector resultante:", vector_resultante)
+
+# Multiplicación escalar entre los dos vectores
+resultado_multiplicacion = np.dot(vector_resultante, C)
+
+# Mostrar el resultado de la multiplicación escalar
+print("Resultado de la multiplicación escalar:", resultado_multiplicacion)
+
+primer_termino = resultado_multiplicacion*INVTSj
+print(primer_termino)
+
+    
 
 
 
