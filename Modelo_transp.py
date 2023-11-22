@@ -19,22 +19,22 @@ ruta_archivo = os.path.join(ruta_actual, nombre_archivo)
 # Lee todas las hojas del archivo Excel en un diccionario
 datos_excel = pd.read_excel(ruta_archivo, sheet_name=None)
 nuevo_arreglo = []
-costo_de_inversion_et = 0  # Costo de Inversión ET
-costo_operativo_et = 0  # Costo Operativo ET
-tasa_de_material_recuperado = 0  # Tasa de material recuperado
-costo_de_venta_de_material_recuperado = 0  # Costo de venta de material recuperado
-costo_de_inversion_de_centro_ambiental = 0  # Costo de inversión de Centro Ambiental
-costo_operativo_de_centro_ambiental = 0  # Costo operativo de Centro Ambiental	
+INVTSj = 0  # Costo de Inversión ET
+OPTSj = 0  # Costo Operativo ET
+RECj = 0  # Tasa de material recuperado
+SPj = 0  # Costo de venta de material recuperado
+INVLk = 0  # Costo de inversión de Centro Ambiental
+OPLk = 0  # Costo operativo de Centro Ambiental	
 
 # Itera a través de las hojas del diccionario y muestra todos los registros de cada hoja
 for nombre_hoja, datos in datos_excel.items():
     if nombre_hoja == 'INPUTS_Generales':
-       costo_de_inversion_et = datos.iloc[20, 6]
-       costo_operativo_et = datos.iloc[21, 6]
-       tasa_de_material_recuperado = datos.iloc[22, 6]
-       costo_de_venta_de_material_recuperado = datos.iloc[23, 6]
-       costo_de_inversion_de_centro_ambiental = datos.iloc[24, 6]
-       costo_operativo_de_centro_ambiental = datos.iloc[25, 6]
+       INVTSj = datos.iloc[20, 6]
+       OPTSj = datos.iloc[21, 6]
+       RECj = datos.iloc[22, 6]
+       SPj = datos.iloc[23, 6]
+       INVLk = datos.iloc[24, 6]
+       OPLk = datos.iloc[25, 6]
     
     if nombre_hoja == 'Gen-Cap':
         data = pd.DataFrame(datos)
@@ -59,12 +59,12 @@ for nombre_hoja, datos in datos_excel.items():
             # Obtén la longitud del array numeric_values
         n = len(numeric_arrays[0])
         # Genera una matriz cuadrada de tamaño nxn inicializada con ceros
-        matrix = np.zeros((n, n))
-        matrix = np.tile(numeric_arrays[0], (n, 1))
-        print(matrix)
+        Aij = np.zeros((n, n))
+        Aij = np.tile(numeric_arrays[0], (n, 1))
+        print(Aij)
         
-        mi_matriz = generar_matriz(numeric_arrays[1])
-        print(mi_matriz)
+        TSj = generar_matriz(numeric_arrays[1])
+        print(TSj)
         
         # while values_list and (pd.isnull(values_list[0]) or isinstance(values_list[0], str)):
         #         values_list.pop(0)
@@ -88,7 +88,7 @@ Xij = [
 for fila in Xij:
     print(' '.join(map(str, fila)))
     
-####### HOLA SOY FELAPIO
+
 
 
 
