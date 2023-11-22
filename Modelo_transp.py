@@ -36,6 +36,7 @@ RECj = 0  # Tasa de material recuperado
 SPj = 0  # Costo de venta de material recuperado
 INVLk = 0  # Costo de inversión de Centro Ambiental
 OPLk = 0  # Costo operativo de Centro Ambiental	
+cantidad_de_ks = 0 # Cantidad de Centros ambientales definidos en la celda G31
 
 # Itera a través de las hojas del diccionario y muestra todos los registros de cada hoja
 for nombre_hoja, datos in datos_excel.items():
@@ -46,6 +47,7 @@ for nombre_hoja, datos in datos_excel.items():
        SPj = datos.iloc[23, 6]
        INVLk = datos.iloc[24, 6]
        OPLk = datos.iloc[25, 6]
+       cantidad_de_ks = datos.iloc[29,6]
     
     if nombre_hoja == 'Gen-Cap':
         data = pd.DataFrame(datos)
@@ -75,6 +77,8 @@ for nombre_hoja, datos in datos_excel.items():
         # print(Aij)
         
         TSj = generar_matriz(numeric_arrays[1])
+        Ik = generar_matriz(numeric_arrays[2])
+       
         # print(TSj)
         
         # while values_list and (pd.isnull(values_list[0]) or isinstance(values_list[0], str)):
@@ -100,7 +104,6 @@ matriz_transpuesta = list(map(list, zip(*Aij)))
 # print(matriz_transpuesta[0][0])
 # resultado = sumaproducto(Xij, matriz_transpuesta)
 # print(resultado)
-
 
 
 A = np.array(Xij)
@@ -182,9 +185,78 @@ print(segundo_termino)
 #HASTA ACÁ LLEGA EL SEGUNDO TÉRMINO, ARRANCA EL TERCERO. SE TOMAN VARIAS VARIABLES YA DEFINIDAS###
 
 
+matriz_resultante = np.tile(vector_resultante, (cantidad_de_ks, 1)).T
 
+Bjk = matriz_resultante
 
+# Mostrar la matriz resultante
+print("Matriz resultante:")
+print(Bjk)
 
+Yjk = [
+    [1, 0],
+    [1, 0],
+    [1, 0],
+    [1, 0]
+]
+
+A = np.array(Yjk)
+
+B = np.array(Bjk)
+
+C = np.array(Ik)
+
+# Obtener el número de columnas de la matriz
+num_filasA, num_columnasA = A.shape
+
+# Iterar sobre cada columna
+for i in range(num_columnasA):
+    columna_actualA = A[:, i]
+    #print(f"Columna {i + 1}: {columna_actualA}")
+    
+    # Obtener el número de columnas de la matriz
+num_filasB, num_columnasB = B.shape
+
+# Iterar sobre cada columna
+for i in range(num_columnasB):
+    columna_actualB = B[:, i]
+    #print(f"Columna {i + 1}: {columna_actualB}")
+    
+    # Verificar si las matrices tienen la misma forma
+if A.shape != B.shape:
+    print("Las matrices no tienen la misma forma.")
+else:
+    n_columnas = A.shape[1]
+    productos = []
+    
+     # Calcular el producto escalar entre las columnas correspondientes
+    for i in range(n_columnas):
+        columna_matriz_1 = A[:, i]
+        columna_matriz_2 = B[:, i]
+        producto_escalar = np.dot(columna_matriz_1, columna_matriz_2)
+        productos.append(producto_escalar)
+        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
+
+    # Sumar los productos escalares individuales para obtener el resultado final
+    resultado_final = sum(productos)
+    print("\nResultado final del producto escalar entre las columnas:", resultado_final)
+    
+    # Convertir la lista de productos a un arreglo NumPy
+vector_resultante = np.array(productos)
+
+# Mostrar el vector resultante
+print("Vector resultante:", vector_resultante)
+
+# Multiplicación escalar entre los dos vectores
+resultado_multiplicacion = np.dot(vector_resultante, C)
+
+# Mostrar el resultado de la multiplicación escalar
+print("Resultado de la multiplicación escalar:", resultado_multiplicacion)
+
+primer_termino = resultado_multiplicacion*INVLk
+print(primer_termino)
+
+######HASTA ACA TERCER TERMINO############
 
 
 
