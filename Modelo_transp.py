@@ -6,6 +6,17 @@ import numpy as np
 def generar_matriz(arr):
     matriz = [[1 if num == 0 else 0] for num in arr]
     return matriz
+def sumaproducto(matriz1, matriz2):
+    if len(matriz1[0]) != len(matriz2):
+        raise ValueError("Las dimensiones de las matrices no son compatibles para la multiplicación")
+
+    # Realizar la multiplicación de matrices usando numpy.dot()
+    resultado = np.dot(matriz1, matriz2)
+
+    # Sumar todos los elementos de la matriz resultante para obtener un solo número entero
+    resultado_entero = int(np.sum(resultado))
+
+    return resultado_entero
 
 # Obtiene la ruta del directorio actual
 ruta_actual = os.path.dirname(os.path.abspath(sys.argv[0]))
@@ -54,17 +65,17 @@ for nombre_hoja, datos in datos_excel.items():
             numeric_arrays.append([x for x in current_numeric_array if not np.isnan(x)])
 
         # Imprimir los arrays numéricos
-        for i, arr in enumerate(numeric_arrays):
-             print(f"Array {i + 1}: {arr}")
+        # for i, arr in enumerate(numeric_arrays):
+        #      print(f"Array {i + 1}: {arr}")
             # Obtén la longitud del array numeric_values
         n = len(numeric_arrays[0])
         # Genera una matriz cuadrada de tamaño nxn inicializada con ceros
         Aij = np.zeros((n, n))
         Aij = np.tile(numeric_arrays[0], (n, 1))
-        print(Aij)
+        # print(Aij)
         
         TSj = generar_matriz(numeric_arrays[1])
-        print(TSj)
+        # print(TSj)
         
         # while values_list and (pd.isnull(values_list[0]) or isinstance(values_list[0], str)):
         #         values_list.pop(0)
@@ -83,11 +94,31 @@ Xij = [
     [1, 0, 0, 0],
     [0, 1, 0, 0]
 ]
+# # Ejemplo de uso:
+matriz_transpuesta = list(map(list, zip(*Aij)))
+# print(Xij[0][0])
+# print(matriz_transpuesta[0][0])
+# resultado = sumaproducto(Xij, matriz_transpuesta)
+# print(resultado)
 
-# Imprimir la matriz
-for fila in Xij:
-    print(' '.join(map(str, fila)))
-    
+
+
+A = np.array(Xij)
+
+B = np.array(matriz_transpuesta)
+# Calcular el producto escalar
+producto_escalar = np.sum(A * B)
+
+print("Matriz A:")
+print(A)
+print("\nMatriz B:")
+print(B)
+print("\nEl producto escalar de las matrices A y B es:", producto_escalar)
+
+
+
+
+
 
 
 
