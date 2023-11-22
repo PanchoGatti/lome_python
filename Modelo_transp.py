@@ -171,8 +171,15 @@ print("Resultado de la multiplicación escalar:", resultado_multiplicacion)
 primer_termino = resultado_multiplicacion*INVTSj
 print(primer_termino)
 
-    
+#HASTA ACÁ LLEGA EL PRIMER TÉRMINO, ARRANCA EL SEGUNDO. SE TOMAN VARIAS VARIABLES YA DEFINIDAS###
 
+# Mostrar el vector resultante calculado anteriormente, de hacer Xij(A) * Aij(B)
+print("Resultado final (Escalar entre Xij y Aij):", resultado_final)
+
+segundo_termino = resultado_final*OPTSj
+print(segundo_termino)
+
+#HASTA ACÁ LLEGA EL SEGUNDO TÉRMINO, ARRANCA EL TERCERO. SE TOMAN VARIAS VARIABLES YA DEFINIDAS###
 
 
 
