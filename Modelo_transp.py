@@ -76,10 +76,6 @@ for nombre_hoja, datos in datos_excel.items():
         #         break
         # while numeric_values and (pd.isnull(numeric_values[-1]) or isinstance(numeric_values[-1], str)):
         #         numeric_values.pop()
-def generar_matriz(arr):
-    matriz = [[1 if num == 0 else 0] for num in arr]
-    return matriz
-
 ##########################################################################################Hasta acá hizo tino#########################
 Xij = [
     [1, 0, 0, 0],
