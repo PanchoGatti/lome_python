@@ -37,6 +37,8 @@ SPj = 0  # Costo de venta de material recuperado
 INVLk = 0  # Costo de inversión de Centro Ambiental
 OPLk = 0  # Costo operativo de Centro Ambiental	
 cantidad_de_ks = 0 # Cantidad de Centros ambientales definidos en la celda G31
+CC = 0 # Costo de transporte de camiones recolectores
+TC = 0 # Costo de transporte de camiones de transferencia
 
 # Itera a través de las hojas del diccionario y muestra todos los registros de cada hoja
 for nombre_hoja, datos in datos_excel.items():
@@ -48,6 +50,8 @@ for nombre_hoja, datos in datos_excel.items():
        INVLk = datos.iloc[24, 6]
        OPLk = datos.iloc[25, 6]
        cantidad_de_ks = datos.iloc[29,6]
+       CC = datos.iloc[14,5]
+       TC = datos.iloc[14,6]
     
     if nombre_hoja == 'Gen-Cap':
         data = pd.DataFrame(datos)
@@ -417,4 +421,5 @@ print("Resultado del sexto término:", sexto_termino)
 
 
 ###############################HASTA ACÁ SEXTO TÉRMINO######################
+
 
