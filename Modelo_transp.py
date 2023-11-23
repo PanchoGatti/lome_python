@@ -327,5 +327,94 @@ print("Resultado del cuarto término:", cuarto_termino)
 
 #################################HASTA ACÁ CUARTO TÉRMINO#############################
 
+A = np.array(Yjk)
 
+B = np.array(Bjk)
+
+# Obtener el número de columnas de la matriz
+num_filasA, num_columnasA = A.shape
+
+# Iterar sobre cada columna
+for i in range(num_columnasA):
+    columna_actualA = A[:, i]
+    #print(f"Columna {i + 1}: {columna_actualA}")
+    
+    # Obtener el número de columnas de la matriz
+num_filasB, num_columnasB = B.shape
+
+# Iterar sobre cada columna
+for i in range(num_columnasB):
+    columna_actualB = B[:, i]
+    #print(f"Columna {i + 1}: {columna_actualB}")
+    
+    # Verificar si las matrices tienen la misma forma
+if A.shape != B.shape:
+    print("Las matrices no tienen la misma forma.")
+else:
+    n_columnas = A.shape[1]
+    productos = []
+    
+     # Calcular el producto escalar entre las columnas correspondientes
+    for i in range(n_columnas):
+        columna_matriz_1 = A[:, i]
+        columna_matriz_2 = B[:, i]
+        producto_escalar = np.dot(columna_matriz_1, columna_matriz_2)
+        productos.append(producto_escalar)
+        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
+
+    # Sumar los productos escalares individuales para obtener el resultado final
+    resultado_final = sum(productos)
+    print("\nResultado final del producto escalar entre las columnas:", resultado_final)
+    
+  
+quinto_termino = resultado_final*OPLk
+print("Resultado del quinto término:", quinto_termino)
+
+######################HASTA ACÁ QUINTO TÉRMINO###############################
+matriz_transpuesta = list(map(list, zip(*Cik)))
+
+A = np.array(Zik)
+B = np.array(matriz_transpuesta)
+
+# Obtener el número de columnas de la matriz
+num_filasA, num_columnasA = A.shape
+
+# Iterar sobre cada columna
+for i in range(num_columnasA):
+    columna_actualA = A[:, i]
+    #print(f"Columna {i + 1}: {columna_actualA}")
+    
+    # Obtener el número de columnas de la matriz
+num_filasB, num_columnasB = B.shape
+
+# Iterar sobre cada columna
+for i in range(num_columnasB):
+    columna_actualB = B[:, i]
+    #print(f"Columna {i + 1}: {columna_actualB}")
+    
+    # Verificar si las matrices tienen la misma forma
+if A.shape != B.shape:
+    print("Las matrices no tienen la misma forma.")
+else:
+    n_columnas = A.shape[1]
+    productos = []
+    
+     # Calcular el producto escalar entre las columnas correspondientes
+    for i in range(n_columnas):
+        columna_matriz_1 = A[:, i]
+        columna_matriz_2 = B[:, i]
+        producto_escalar = np.dot(columna_matriz_1, columna_matriz_2)
+        productos.append(producto_escalar)
+        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
+
+    # Sumar los productos escalares individuales para obtener el resultado final
+    resultado_final = sum(productos)
+    print("\nResultado final del producto escalar entre las columnas:", resultado_final)
+    
+  
+sexto_termino = resultado_final*OPLk
+print("Resultado del sexto término:", sexto_termino)
+
+
+###############################HASTA ACÁ SEXTO TÉRMINO######################
 
