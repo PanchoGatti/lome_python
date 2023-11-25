@@ -43,7 +43,9 @@ OPLk = 0  # Costo operativo de Centro Ambiental
 cantidad_de_ks = 0 # Cantidad de Centros ambientales definidos en la celda G31
 CC = 0 # Costo de transporte de camiones recolectores
 TC = 0 # Costo de transporte de camiones de transferencia
-
+Djk = [[]]
+Dik = [[]]
+Dij = [[]]
 # Itera a través de las hojas del diccionario y muestra todos los registros de cada hoja
 for nombre_hoja, datos in datos_excel.items():
     if nombre_hoja == 'INPUTS_Generales':
@@ -57,7 +59,16 @@ for nombre_hoja, datos in datos_excel.items():
        CC = datos.iloc[14,5]
        TC = datos.iloc[14,6]
     
-              
+    if nombre_hoja == 'Datos_Loc_ETs':
+        Dij = datos_loc_ets(datos)
+    
+    if nombre_hoja == 'Datos_Loc_CAs':
+        Dik = datos_loc_cas(datos)
+
+    if nombre_hoja == 'Datos_ETs_CAs':
+        Djk = datos_ets_cas(datos)
+        
+         
     if nombre_hoja == 'Gen-Cap':
         data = pd.DataFrame(datos)
         values_list = data.values.flatten().tolist()
@@ -91,19 +102,7 @@ for nombre_hoja, datos in datos_excel.items():
         m = len(numeric_arrays[2])
         Cik = np.zeros((n,m))
         Cik = np.tile(numeric_arrays[0], (m,1))
-        
-       
-        
-        # while values_list and (pd.isnull(values_list[0]) or isinstance(values_list[0], str)):
-        #         values_list.pop(0)
-        # numeric_values = []
-        # for x in values_list:
-        #     if isinstance(x, (int, float)):
-        #         numeric_values.append(x)
-        #     elif isinstance(x, str) or pd.isnull(x):
-        #         break
-        # while numeric_values and (pd.isnull(numeric_values[-1]) or isinstance(numeric_values[-1], str)):
-        #         numeric_values.pop()
+
 ##########################################################################################Hasta acá hizo tino#########################
 Xij = [
     [1, 0, 0, 0],
@@ -111,47 +110,19 @@ Xij = [
     [1, 0, 0, 0],
     [0, 1, 0, 0]
 ]
-# # Ejemplo de uso:
-matriz_transpuesta = list(map(list, zip(*Aij)))
-# print(Xij[0][0])
-# print(matriz_transpuesta[0][0])
-# resultado = sumaproducto(Xij, matriz_transpuesta)
-# print(resultado)
 
+matriz_transpuesta = list(map(list, zip(*Aij)))
 
 A = np.array(Xij)
-
 B = np.array(matriz_transpuesta)
-
 C = np.array(TSj)
 
 # Calcular el producto escalar
 producto_escalar = np.sum(A * B* C)
 
-print("Matriz A:")
-print(A)
-print("\nMatriz B:")
-print(B)
-print("\nMatriz C:")
-print(C)
 print("\nEl producto escalar de las matrices A y B es:", producto_escalar)
 
 ###################################################### HASTA ACA HIZO TINO 22/11 17HS###################3
-# Obtener el número de columnas de la matriz
-num_filasA, num_columnasA = A.shape
-
-# Iterar sobre cada columna
-for i in range(num_columnasA):
-    columna_actualA = A[:, i]
-    #print(f"Columna {i + 1}: {columna_actualA}")
-    
-    # Obtener el número de columnas de la matriz
-num_filasB, num_columnasB = B.shape
-
-# Iterar sobre cada columna
-for i in range(num_columnasB):
-    columna_actualB = B[:, i]
-    #print(f"Columna {i + 1}: {columna_actualB}")
     
     # Verificar si las matrices tienen la misma forma
 if A.shape != B.shape:
@@ -199,13 +170,7 @@ print("Resultado del segundo término:", segundo_termino)
 #HASTA ACÁ LLEGA EL SEGUNDO TÉRMINO, ARRANCA EL TERCERO. SE TOMAN VARIAS VARIABLES YA DEFINIDAS###
 
 
-matriz_resultante = np.tile(vector_resultante, (cantidad_de_ks, 1)).T
-
-Bjk = matriz_resultante
-
-# Mostrar la matriz resultante
-print("Matriz resultante BJK:")
-print(Bjk)
+Bjk = np.tile(vector_resultante, (cantidad_de_ks, 1)).T
 
 Yjk = [
     [1, 0],
@@ -215,28 +180,10 @@ Yjk = [
 ]
 
 A = np.array(Yjk)
-
 B = np.array(Bjk)
-
 C = np.array(Ik)
 
-# Obtener el número de columnas de la matriz
-num_filasA, num_columnasA = A.shape
-
-# Iterar sobre cada columna
-for i in range(num_columnasA):
-    columna_actualA = A[:, i]
-    #print(f"Columna {i + 1}: {columna_actualA}")
-    
-    # Obtener el número de columnas de la matriz
-num_filasB, num_columnasB = B.shape
-
-# Iterar sobre cada columna
-for i in range(num_columnasB):
-    columna_actualB = B[:, i]
-    #print(f"Columna {i + 1}: {columna_actualB}")
-    
-    # Verificar si las matrices tienen la misma forma
+# Verificar si las matrices tienen la misma forma
 if A.shape != B.shape:
     print("Las matrices no tienen la misma forma.")
 else:
@@ -285,23 +232,7 @@ A = np.array(Zik)
 B = np.array(matriz_transpuesta)
 C = np.array(Ik)
 
-# Obtener el número de columnas de la matriz
-num_filasA, num_columnasA = A.shape
-
-# Iterar sobre cada columna
-for i in range(num_columnasA):
-    columna_actualA = A[:, i]
-    #print(f"Columna {i + 1}: {columna_actualA}")
-    
-    # Obtener el número de columnas de la matriz
-num_filasB, num_columnasB = B.shape
-
-# Iterar sobre cada columna
-for i in range(num_columnasB):
-    columna_actualB = B[:, i]
-    #print(f"Columna {i + 1}: {columna_actualB}")
-    
-    # Verificar si las matrices tienen la misma forma
+# Verificar si las matrices tienen la misma forma
 if A.shape != B.shape:
     print("Las matrices no tienen la misma forma.")
 else:
@@ -339,26 +270,9 @@ print("Resultado del cuarto término:", cuarto_termino)
 #################################HASTA ACÁ CUARTO TÉRMINO#############################
 
 A = np.array(Yjk)
-
 B = np.array(Bjk)
 
-# Obtener el número de columnas de la matriz
-num_filasA, num_columnasA = A.shape
-
-# Iterar sobre cada columna
-for i in range(num_columnasA):
-    columna_actualA = A[:, i]
-    #print(f"Columna {i + 1}: {columna_actualA}")
-    
-    # Obtener el número de columnas de la matriz
-num_filasB, num_columnasB = B.shape
-
-# Iterar sobre cada columna
-for i in range(num_columnasB):
-    columna_actualB = B[:, i]
-    #print(f"Columna {i + 1}: {columna_actualB}")
-    
-    # Verificar si las matrices tienen la misma forma
+# Verificar si las matrices tienen la misma forma
 if A.shape != B.shape:
     print("Las matrices no tienen la misma forma.")
 else:
@@ -387,23 +301,7 @@ matriz_transpuesta = list(map(list, zip(*Cik)))
 A = np.array(Zik)
 B = np.array(matriz_transpuesta)
 
-# Obtener el número de columnas de la matriz
-num_filasA, num_columnasA = A.shape
-
-# Iterar sobre cada columna
-for i in range(num_columnasA):
-    columna_actualA = A[:, i]
-    #print(f"Columna {i + 1}: {columna_actualA}")
-    
-    # Obtener el número de columnas de la matriz
-num_filasB, num_columnasB = B.shape
-
-# Iterar sobre cada columna
-for i in range(num_columnasB):
-    columna_actualB = B[:, i]
-    #print(f"Columna {i + 1}: {columna_actualB}")
-    
-    # Verificar si las matrices tienen la misma forma
+# Verificar si las matrices tienen la misma forma
 if A.shape != B.shape:
     print("Las matrices no tienen la misma forma.")
 else:
@@ -433,12 +331,11 @@ print("Resultado del sexto término:", sexto_termino)
 
 matriz_transpuesta = list(map(list, zip(*Aij)))
 
-Dij = datos_loc_ets()
 A = np.array(Xij)
 B = np.array(matriz_transpuesta)
 C = np.array(Dij)
 
-    # Verificar si las matrices tienen la misma forma
+# Verificar si las matrices tienen la misma forma
 if A.shape != B.shape:
     print("Las matrices no tienen la misma forma.")
 
@@ -472,7 +369,6 @@ print("EMPIEZXA EL OCTAVOOOOOOOO")
 
 matriz_transpuesta = list(map(list, zip(*Cik)))
 
-Dik = datos_loc_cas()
 A = np.array(Zik)
 B = np.array(matriz_transpuesta)
 C = np.array(Dik)
@@ -510,7 +406,6 @@ print("EMPIEZXA EL NOVENOOOO")
 
 matriz_transpuesta = list(map(list, zip(*Bjk)))
 
-Djk = datos_ets_cas()
 A = np.array(Yjk)
 B = np.array(Bjk)
 C = np.array(Djk)
