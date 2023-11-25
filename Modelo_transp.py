@@ -2,6 +2,8 @@ import pandas as pd
 import os
 import sys
 import numpy as np
+from Datos_ETs_CAs import datos_ets_cas
+from Datos_Loc_CAs import datos_loc_cas
 
 from Datos_Loc_ETs import datos_loc_ets
 
@@ -435,32 +437,7 @@ Dij = datos_loc_ets()
 A = np.array(Xij)
 B = np.array(matriz_transpuesta)
 C = np.array(Dij)
-print("A:",A , "B: ", B, "C: ", C)
 
-# Obtener el número de columnas de la matriz
-num_filasA, num_columnasA = A.shape
-
-# Iterar sobre cada columna
-for i in range(num_columnasA):
-    columna_actualA = A[:, i]
-    #print(f"Columna {i + 1}: {columna_actualA}")
-    
-# Obtener el número de columnas de la matriz
-num_filasB, num_columnasB = B.shape
-
-# Iterar sobre cada columna
-for i in range(num_columnasB):
-    columna_actualB = B[:, i]
-    #print(f"Columna {i + 1}: {columna_actualB}")
-    
-# Obtener el número de columnas de la matriz
-num_filasC, num_columnasC = C.shape
-
-# Iterar sobre cada columna
-for i in range(num_columnasC):
-    columna_actualC = C[:, i]
-    #print(f"Columna {i + 1}: {columna_actualC}")
-    
     # Verificar si las matrices tienen la misma forma
 if A.shape != B.shape:
     print("Las matrices no tienen la misma forma.")
@@ -489,3 +466,103 @@ septimo_termino = resultado_final*CC
 print("Resultado del septimo término:", septimo_termino)
 
 ###############################HASTA ACÁ SÉPTIMO TÉRMINO######################
+
+
+print("EMPIEZXA EL OCTAVOOOOOOOO")
+
+matriz_transpuesta = list(map(list, zip(*Cik)))
+
+Dik = datos_loc_cas()
+A = np.array(Zik)
+B = np.array(matriz_transpuesta)
+C = np.array(Dik)
+
+    # Verificar si las matrices tienen la misma forma
+if A.shape != B.shape:
+    print("Las matrices no tienen la misma forma.")
+
+elif A.shape != C.shape:
+    print("Las matrices no tienen la misma forma")
+    
+else:
+    n_columnas = A.shape[1]
+    productos = []
+    
+     # Calcular el producto escalar entre las columnas correspondientes
+    for i in range(n_columnas):
+        columna_matriz_1 = A[:, i]
+        columna_matriz_2 = B[:, i]
+        columna_matriz_3 = C[:, i]
+        producto_escalar = np.sum(columna_matriz_1 * columna_matriz_2 * columna_matriz_3)
+        productos.append(producto_escalar)
+        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
+
+    # Sumar los productos escalares individuales para obtener el resultado final
+    resultado_final = sum(productos)
+    print("\nResultado final del producto escalar entre las columnas:", resultado_final)
+
+octavo_termino = resultado_final*CC
+print("Resultado del octavo término:", octavo_termino)
+
+###############################HASTA ACÁ Octqavo TÉRMINO######################
+
+print("EMPIEZXA EL NOVENOOOO")
+
+matriz_transpuesta = list(map(list, zip(*Bjk)))
+
+Djk = datos_ets_cas()
+A = np.array(Yjk)
+B = np.array(Bjk)
+C = np.array(Djk)
+
+print("A ", A ,"B ", B ,"C ", C)
+
+    # Verificar si las matrices tienen la misma forma
+if A.shape != B.shape:
+    print("Las matrices no tienen la misma forma.")
+
+elif A.shape != C.shape:
+    print("Las matrices no tienen la misma forma")
+    
+else:
+    n_columnas = A.shape[1]
+    productos = []
+    
+     # Calcular el producto escalar entre las columnas correspondientes
+    for i in range(n_columnas):
+        columna_matriz_1 = A[:, i]
+        columna_matriz_2 = B[:, i]
+        columna_matriz_3 = C[:, i]
+        producto_escalar = np.sum(columna_matriz_1 * columna_matriz_2 * columna_matriz_3)
+        productos.append(producto_escalar)
+        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
+
+    # Sumar los productos escalares individuales para obtener el resultado final
+    resultado_final = sum(productos)
+    print("\nResultado final del producto escalar entre las columnas:", resultado_final)
+
+noveno_termino = resultado_final*TC
+print("Resultado del noveno término:", noveno_termino)
+
+
+###############################HASTA ACÁ noveno TÉRMINO######################
+
+# Mostrar el vector resultante calculado anteriormente, de hacer Xij(A) * Aij(B)
+A = np.array(Xij)
+B = np.array(list(map(list, zip(*Aij))))
+n_columnas = A.shape[1]
+productos = []
+for i in range(n_columnas):
+        columna_matriz_1 = A[:, i]
+        columna_matriz_2 = B[:, i]
+        producto_escalar = np.dot(columna_matriz_1, columna_matriz_2)
+        productos.append(producto_escalar)
+        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
+resultado_final = sum(productos)
+decimo_termino = (resultado_final*(RECj * SPj))
+
+print("Resultado del decimo término:", decimo_termino)
+
+###############################HASTA ACÁ decimo TÉRMINO######################
+
+print("LA SUMAMAM: ", primer_termino + segundo_termino + tercer_termino + cuarto_termino + quinto_termino + sexto_termino + septimo_termino + octavo_termino + noveno_termino - decimo_termino)
