@@ -63,6 +63,10 @@ T3t = 0 # Horas de limpieza de camion transportador
 T4t = 0 # Horas de carga de camion transportador
 T5t = 0 # Horas de descarga de camion transportador
 SPDt = 0 # Velocidad de camion transportador
+Uc = 0 # Factor U para recolectores
+KPLc = 0 # distancia recorrida en un litro de camiones recolectores km/l
+Ut = 0 # Factor U para transportadores
+KPLt = 0 # distancia recorrida en un litro de camiones transportadores km/l
 
 # Itera a través de las hojas del diccionario y muestra todos los registros de cada hoja
 for nombre_hoja, datos in datos_excel.items():
@@ -96,6 +100,10 @@ for nombre_hoja, datos in datos_excel.items():
        T4t = datos.iloc[5,6]
        T5t = (datos.iloc[6,6])/60
        SPDt = datos.iloc[7,6]
+       Uc = datos.iloc[17,5]
+       KPLc = datos.iloc[15,5]
+       Ut = datos.iloc[17,6]
+       KPLt = datos.iloc[15,6]
     
               
     if nombre_hoja == 'Gen-Cap':
@@ -146,10 +154,10 @@ for nombre_hoja, datos in datos_excel.items():
         #         numeric_values.pop()
 ##########################################################################################Hasta acá hizo tino#########################
 Xij = [
-    [1, 1, 1, 1],
-    [1, 1, 1, 1],
-    [1, 1, 1, 1],
-    [1, 1, 1, 1]
+    [1, 0, 0, 0],
+    [0, 1, 0, 0],
+    [1, 0, 0, 0],
+    [0, 1, 0, 0]
 ]
 # # Ejemplo de uso:
 matriz_transpuesta = list(map(list, zip(*Aij)))
@@ -248,10 +256,10 @@ print("Matriz resultante BJK:")
 print(Bjk)
 
 Yjk = [
-    [1, 1],
-    [1, 1],
-    [1, 1],
-    [1, 1]
+    [1, 0],
+    [1, 0],
+    [1, 0],
+    [1, 0]
 ]
 
 A = np.array(Yjk)
@@ -315,10 +323,10 @@ print("Resultado del tercer término:", tercer_termino)
 matriz_transpuesta = list(map(list, zip(*Cik)))
 
 Zik = [
-    [1, 1],
-    [1, 1],
-    [1, 1],
-    [1, 1]
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0]
 ]
 
 A = np.array(Zik)
@@ -672,9 +680,7 @@ print("Resultado del segundo termino segunda expresión:", segundo_termino_segun
 
 ########################HASTA ACÁ SEGUNDO TÉRMINO DE LA SEGUNDA EXPRESIÓN #################
 
-print("Tercer término de camiones!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-
-
+#Tercer término de camiones
 TRcik= (T1c-(T2c+T3c))/((2*Dik/SPDc)+T4c+T5c)
 matriz_transpuesta = list(map(list, zip(*Cik)))
 
@@ -703,9 +709,139 @@ tercer_termino_segundaexp = (resultado_final)
 
 print(" La flota total de camiones se constituye por ", primer_termino_segundaexp + tercer_termino_segundaexp , "de camiones recolectores y ", segundo_termino_segundaexp, "de camiones transportadores, dando un total de " , primer_termino_segundaexp + segundo_termino_segundaexp + tercer_termino_segundaexp, "camiones")
 
-print(primer_termino_segundaexp)
-print(segundo_termino_segundaexp)
-print(tercer_termino_segundaexp)
+
 
 ###################################### Comienza la tercera expresión ################
 
+
+
+
+
+
+
+
+
+
+print("Comienzo de la tercer expresión  - Cálculo de gases de EI en kg de CO2 eq")
+
+
+
+A = np.array(Xij)
+B = np.array(NCij)
+C = np.array(Dij)
+D = np.array(TRcij)
+
+    # Verificar si las matrices tienen la misma forma
+if A.shape != B.shape:
+    print("Las matrices no tienen la misma forma.")
+
+elif A.shape != C.shape:
+    print("Las matrices no tienen la misma forma")
+    
+elif A.shape != D.shape:
+    print("Las matrices no tienen la misma forma")
+    
+else: 
+    n_columnas = A.shape[1]
+    productos = []
+    
+     # Calcular el producto escalar entre las columnas correspondientes
+    for i in range(n_columnas):
+        columna_matriz_1 = A[:, i]
+        columna_matriz_2 = B[:, i]
+        columna_matriz_3 = C[:, i]
+        columna_matriz_4 = D[:, i]
+        producto_escalar = np.sum(columna_matriz_1 * columna_matriz_2 * columna_matriz_3 * columna_matriz_4)
+        productos.append(producto_escalar)
+        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
+
+    # Sumar los productos escalares individuales para obtener el resultado final
+    resultado_final = sum(productos)
+    #print("\nResultado final del producto escalar entre las columnas:", resultado_final)
+
+    primer_termino_tercerexp = resultado_final*(Uc/KPLc)*2
+    
+    print("Resultado del primer término de la tercer expresión:", primer_termino_tercerexp)
+    ###################################### Hasta acá primer termino de la tercer expresión ################
+    
+
+A = np.array(Yjk)
+B = np.array(NTjk)
+C = np.array(Djk)
+D = np.array(TRtjk)
+
+    # Verificar si las matrices tienen la misma forma
+if A.shape != B.shape:
+    print("Las matrices no tienen la misma forma.")
+
+elif A.shape != C.shape:
+    print("Las matrices no tienen la misma forma")
+    
+elif A.shape != D.shape:
+    print("Las matrices no tienen la misma forma")
+    
+else: 
+    n_columnas = A.shape[1]
+    productos = []
+    
+     # Calcular el producto escalar entre las columnas correspondientes
+    for i in range(n_columnas):
+        columna_matriz_1 = A[:, i]
+        columna_matriz_2 = B[:, i]
+        columna_matriz_3 = C[:, i]
+        columna_matriz_4 = D[:, i]
+        producto_escalar = np.sum(columna_matriz_1 * columna_matriz_2 * columna_matriz_3 * columna_matriz_4)
+        productos.append(producto_escalar)
+        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
+
+    # Sumar los productos escalares individuales para obtener el resultado final
+    resultado_final = sum(productos)
+    #print("\nResultado final del producto escalar entre las columnas:", resultado_final)
+
+    segundo_termino_tercerexp = resultado_final*(Ut/KPLt)*2
+    
+    print("Resultado del segundo término de la tercer expresión:", segundo_termino_tercerexp)
+    
+###################################### Hasta acá segundo termino de la tercer expresión ################  
+
+A = np.array(Zik)
+B = np.array(NCik)
+C = np.array(Dik)
+D = np.array(TRcik)
+
+    # Verificar si las matrices tienen la misma forma
+if A.shape != B.shape:
+    print("Las matrices no tienen la misma forma.")
+
+elif A.shape != C.shape:
+    print("Las matrices no tienen la misma forma")
+    
+elif A.shape != D.shape:
+    print("Las matrices no tienen la misma forma")
+    
+else: 
+    n_columnas = A.shape[1]
+    productos = []
+    
+     # Calcular el producto escalar entre las columnas correspondientes
+    for i in range(n_columnas):
+        columna_matriz_1 = A[:, i]
+        columna_matriz_2 = B[:, i]
+        columna_matriz_3 = C[:, i]
+        columna_matriz_4 = D[:, i]
+        producto_escalar = np.sum(columna_matriz_1 * columna_matriz_2 * columna_matriz_3 * columna_matriz_4)
+        productos.append(producto_escalar)
+        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
+
+    # Sumar los productos escalares individuales para obtener el resultado final
+    resultado_final = sum(productos)
+    #print("\nResultado final del producto escalar entre las columnas:", resultado_final)
+
+    tercer_termino_tercerexp = resultado_final*(Ut/KPLt)*2
+    
+
+    
+    
+    print("El costo total es de: ", primer_termino + segundo_termino + tercer_termino + cuarto_termino + quinto_termino + sexto_termino + septimo_termino + octavo_termino + noveno_termino - decimo_termino)
+    print(" La flota total es de " , primer_termino_segundaexp + segundo_termino_segundaexp + tercer_termino_segundaexp, "camiones")
+    print("Los gases invernadero total son: ", primer_termino_tercerexp + segundo_termino_tercerexp + tercer_termino_tercerexp)
