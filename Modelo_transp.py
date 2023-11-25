@@ -53,6 +53,7 @@ for nombre_hoja, datos in datos_excel.items():
        CC = datos.iloc[14,5]
        TC = datos.iloc[14,6]
     
+              
     if nombre_hoja == 'Gen-Cap':
         data = pd.DataFrame(datos)
         values_list = data.values.flatten().tolist()
@@ -423,3 +424,125 @@ print("Resultado del sexto término:", sexto_termino)
 ###############################HASTA ACÁ SEXTO TÉRMINO######################
 
 
+
+matriz_transpuesta = list(map(list, zip(*Aij)))
+
+#Dij = 1 1 1 1 1 
+
+A = np.array(Xij)
+B = np.array(matriz_transpuesta)
+#C = np.array(Dij)
+
+# Obtener el número de columnas de la matriz
+num_filasA, num_columnasA = A.shape
+
+# Iterar sobre cada columna
+for i in range(num_columnasA):
+    columna_actualA = A[:, i]
+    #print(f"Columna {i + 1}: {columna_actualA}")
+    
+# Obtener el número de columnas de la matriz
+num_filasB, num_columnasB = B.shape
+
+# Iterar sobre cada columna
+for i in range(num_columnasB):
+    columna_actualB = B[:, i]
+    #print(f"Columna {i + 1}: {columna_actualB}")
+    
+# Obtener el número de columnas de la matriz
+num_filasC, num_columnasC = C.shape
+
+# Iterar sobre cada columna
+for i in range(num_columnasC):
+    columna_actualC = C[:, i]
+    #print(f"Columna {i + 1}: {columna_actualC}")
+    
+    # Verificar si las matrices tienen la misma forma
+if A.shape != B.shape:
+    print("Las matrices no tienen la misma forma.")
+
+elif A.shape != C.shape:
+    print("Las matrices no tienen la misma forma")
+    
+else:
+    n_columnas = A.shape[1]
+    productos = []
+    
+     # Calcular el producto escalar entre las columnas correspondientes
+    for i in range(n_columnas):
+        columna_matriz_1 = A[:, i]
+        columna_matriz_2 = B[:, i]
+        columna_matriz_3 = C[:, i]
+        producto_escalar = np.dot(columna_matriz_1, columna_matriz_2,columna_matriz_3)
+        productos.append(producto_escalar)
+        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
+
+    # Sumar los productos escalares individuales para obtener el resultado final
+    resultado_final = sum(productos)
+    print("\nResultado final del producto escalar entre las columnas:", resultado_final)
+    
+septimo_termino = resultado_final*CC
+print("Resultado del septimo término:", septimo_termino)
+
+
+
+###############################HASTA ACÁ SÉPTIMO TÉRMINO######################
+
+matriz_transpuesta = list(map(list, zip(*Cik)))
+
+#Dik = 1 1 1 1 1 
+
+A = np.array(Zik)
+B = np.array(matriz_transpuesta)
+#C = np.array(Dik)
+
+# Obtener el número de columnas de la matriz
+num_filasA, num_columnasA = A.shape
+
+# Iterar sobre cada columna
+for i in range(num_columnasA):
+    columna_actualA = A[:, i]
+    #print(f"Columna {i + 1}: {columna_actualA}")
+    
+# Obtener el número de columnas de la matriz
+num_filasB, num_columnasB = B.shape
+
+# Iterar sobre cada columna
+for i in range(num_columnasB):
+    columna_actualB = B[:, i]
+    #print(f"Columna {i + 1}: {columna_actualB}")
+    
+# Obtener el número de columnas de la matriz
+num_filasC, num_columnasC = C.shape
+
+# Iterar sobre cada columna
+for i in range(num_columnasC):
+    columna_actualC = C[:, i]
+    #print(f"Columna {i + 1}: {columna_actualC}")
+    
+    # Verificar si las matrices tienen la misma forma
+if A.shape != B.shape:
+    print("Las matrices no tienen la misma forma.")
+
+elif A.shape != C.shape:
+    print("Las matrices no tienen la misma forma")
+    
+else:
+    n_columnas = A.shape[1]
+    productos = []
+    
+     # Calcular el producto escalar entre las columnas correspondientes
+    for i in range(n_columnas):
+        columna_matriz_1 = A[:, i]
+        columna_matriz_2 = B[:, i]
+        columna_matriz_3 = C[:, i]
+        producto_escalar = np.dot(columna_matriz_1, columna_matriz_2,columna_matriz_3)
+        productos.append(producto_escalar)
+        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
+
+    # Sumar los productos escalares individuales para obtener el resultado final
+    resultado_final = sum(productos)
+    print("\nResultado final del producto escalar entre las columnas:", resultado_final)
+    
+octavo_termino = resultado_final*CC
+print("Resultado del octavo término:", octavo_termino)
