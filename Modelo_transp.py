@@ -129,7 +129,7 @@ print("\nEl producto escalar de las matrices A y B es:", producto_escalar)
 if A.shape != B.shape:
     print("Las matrices no tienen la misma forma.")
 else:
-    n_columnas = A.shape[1]
+    
     productos = productoEscalar2Matrices(A,B)
     
     # Sumar los productos escalares individuales para obtener el resultado final
@@ -180,7 +180,7 @@ C = np.array(Ik)
 if A.shape != B.shape:
     print("Las matrices no tienen la misma forma.")
 else:
-    n_columnas = A.shape[1]
+    
     productos = productoEscalar2Matrices(A,B)
     resultado_final = sum(productos)
     print("\nResultado final del producto escalar entre las columnas:", resultado_final)
@@ -219,7 +219,7 @@ C = np.array(Ik)
 if A.shape != B.shape:
     print("Las matrices no tienen la misma forma.")
 else:
-    n_columnas = A.shape[1]
+    
     productos = productoEscalar2Matrices(A,B)
     resultado_final = sum(productos)
     print("\nResultado final del producto escalar entre las columnas:", resultado_final)
@@ -249,7 +249,7 @@ B = np.array(Bjk)
 if A.shape != B.shape:
     print("Las matrices no tienen la misma forma.")
 else:
-    n_columnas = A.shape[1]
+    
     productos = productoEscalar2Matrices(A,B)
     resultado_final = sum(productos)
     print("\nResultado final del producto escalar entre las columnas:", resultado_final)
@@ -268,7 +268,7 @@ B = np.array(matriz_transpuesta)
 if A.shape != B.shape:
     print("Las matrices no tienen la misma forma.")
 else:
-    n_columnas = A.shape[1]
+    
     productos = productoEscalar2Matrices(A,B)
     
     resultado_final = sum(productos)
@@ -297,7 +297,7 @@ elif A.shape != C.shape:
     print("Las matrices no tienen la misma forma")
     
 else:
-    n_columnas = A.shape[1]
+    
     productos = productoEscalar3Matrices(A,B,C)
     # Sumar los productos escalares individuales para obtener el resultado final
     resultado_final = sum(productos)
@@ -325,7 +325,7 @@ elif A.shape != C.shape:
     print("Las matrices no tienen la misma forma")
     
 else:
-    n_columnas = A.shape[1]
+    
     productos = productos = productoEscalar3Matrices(A,B,C)
     resultado_final = sum(productos)
     print("\nResultado final del producto escalar entre las columnas:", resultado_final)
@@ -353,7 +353,7 @@ elif A.shape != C.shape:
     print("Las matrices no tienen la misma forma")
     
 else:
-    n_columnas = A.shape[1]
+    
     productos = productoEscalar3Matrices(A,B,C)
     resultado_final = sum(productos)
     print("\nResultado final del producto escalar entre las columnas:", resultado_final)
@@ -367,7 +367,7 @@ print("Resultado del noveno término:", noveno_termino)
 # Mostrar el vector resultante calculado anteriormente, de hacer Xij(A) * Aij(B)
 A = np.array(Xij)
 B = np.array(list(map(list, zip(*Aij))))
-n_columnas = A.shape[1]
+
 productos = productoEscalar2Matrices(A,B)
 resultado_final = sum(productos)
 decimo_termino = (resultado_final*(RECj * SPj))
