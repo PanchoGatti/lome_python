@@ -6,21 +6,22 @@ from Datos_ETs_CAs import datos_ets_cas
 from Datos_Loc_CAs import datos_loc_cas
 
 from Datos_Loc_ETs import datos_loc_ets
+from Utiles import generar_matriz, productoEscalar2Matrices, productoEscalar3Matrices
 
-def generar_matriz(arr):
-    matriz = [[1 if num == 0 else 0] for num in arr]
-    return matriz
-def sumaproducto(matriz1, matriz2):
-    if len(matriz1[0]) != len(matriz2):
-        raise ValueError("Las dimensiones de las matrices no son compatibles para la multiplicación")
+# def generar_matriz(arr):
+#     matriz = [[1 if num == 0 else 0] for num in arr]
+#     return matriz
+# def sumaproducto(matriz1, matriz2):
+#     if len(matriz1[0]) != len(matriz2):
+#         raise ValueError("Las dimensiones de las matrices no son compatibles para la multiplicación")
 
-    # Realizar la multiplicación de matrices usando numpy.dot()
-    resultado = np.dot(matriz1, matriz2)
+#     # Realizar la multiplicación de matrices usando numpy.dot()
+#     resultado = np.dot(matriz1, matriz2)
 
-    # Sumar todos los elementos de la matriz resultante para obtener un solo número entero
-    resultado_entero = int(np.sum(resultado))
+#     # Sumar todos los elementos de la matriz resultante para obtener un solo número entero
+#     resultado_entero = int(np.sum(resultado))
 
-    return resultado_entero
+#     return resultado_entero
 
 # Obtiene la ruta del directorio actual
 ruta_actual = os.path.dirname(os.path.abspath(sys.argv[0]))
@@ -129,16 +130,8 @@ if A.shape != B.shape:
     print("Las matrices no tienen la misma forma.")
 else:
     n_columnas = A.shape[1]
-    productos = []
+    productos = productoEscalar2Matrices(A,B)
     
-     # Calcular el producto escalar entre las columnas correspondientes
-    for i in range(n_columnas):
-        columna_matriz_1 = A[:, i]
-        columna_matriz_2 = B[:, i]
-        producto_escalar = np.dot(columna_matriz_1, columna_matriz_2)
-        productos.append(producto_escalar)
-        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
-
     # Sumar los productos escalares individuales para obtener el resultado final
     resultado_final = sum(productos)
     print("\nResultado final del producto escalar entre las columnas:", resultado_final)
@@ -188,17 +181,7 @@ if A.shape != B.shape:
     print("Las matrices no tienen la misma forma.")
 else:
     n_columnas = A.shape[1]
-    productos = []
-    
-     # Calcular el producto escalar entre las columnas correspondientes
-    for i in range(n_columnas):
-        columna_matriz_1 = A[:, i]
-        columna_matriz_2 = B[:, i]
-        producto_escalar = np.dot(columna_matriz_1, columna_matriz_2)
-        productos.append(producto_escalar)
-        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
-
-    # Sumar los productos escalares individuales para obtener el resultado final
+    productos = productoEscalar2Matrices(A,B)
     resultado_final = sum(productos)
     print("\nResultado final del producto escalar entre las columnas:", resultado_final)
     
@@ -237,17 +220,7 @@ if A.shape != B.shape:
     print("Las matrices no tienen la misma forma.")
 else:
     n_columnas = A.shape[1]
-    productos = []
-    
-     # Calcular el producto escalar entre las columnas correspondientes
-    for i in range(n_columnas):
-        columna_matriz_1 = A[:, i]
-        columna_matriz_2 = B[:, i]
-        producto_escalar = np.dot(columna_matriz_1, columna_matriz_2)
-        productos.append(producto_escalar)
-        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
-
-    # Sumar los productos escalares individuales para obtener el resultado final
+    productos = productoEscalar2Matrices(A,B)
     resultado_final = sum(productos)
     print("\nResultado final del producto escalar entre las columnas:", resultado_final)
     
@@ -277,17 +250,7 @@ if A.shape != B.shape:
     print("Las matrices no tienen la misma forma.")
 else:
     n_columnas = A.shape[1]
-    productos = []
-    
-     # Calcular el producto escalar entre las columnas correspondientes
-    for i in range(n_columnas):
-        columna_matriz_1 = A[:, i]
-        columna_matriz_2 = B[:, i]
-        producto_escalar = np.dot(columna_matriz_1, columna_matriz_2)
-        productos.append(producto_escalar)
-        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
-
-    # Sumar los productos escalares individuales para obtener el resultado final
+    productos = productoEscalar2Matrices(A,B)
     resultado_final = sum(productos)
     print("\nResultado final del producto escalar entre las columnas:", resultado_final)
     
@@ -306,17 +269,8 @@ if A.shape != B.shape:
     print("Las matrices no tienen la misma forma.")
 else:
     n_columnas = A.shape[1]
-    productos = []
+    productos = productoEscalar2Matrices(A,B)
     
-     # Calcular el producto escalar entre las columnas correspondientes
-    for i in range(n_columnas):
-        columna_matriz_1 = A[:, i]
-        columna_matriz_2 = B[:, i]
-        producto_escalar = np.dot(columna_matriz_1, columna_matriz_2)
-        productos.append(producto_escalar)
-        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
-
-    # Sumar los productos escalares individuales para obtener el resultado final
     resultado_final = sum(productos)
     print("\nResultado final del producto escalar entre las columnas:", resultado_final)
     
@@ -344,17 +298,7 @@ elif A.shape != C.shape:
     
 else:
     n_columnas = A.shape[1]
-    productos = []
-    
-     # Calcular el producto escalar entre las columnas correspondientes
-    for i in range(n_columnas):
-        columna_matriz_1 = A[:, i]
-        columna_matriz_2 = B[:, i]
-        columna_matriz_3 = C[:, i]
-        producto_escalar = np.sum(columna_matriz_1 * columna_matriz_2 * columna_matriz_3)
-        productos.append(producto_escalar)
-        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
-
+    productos = productoEscalar3Matrices(A,B,C)
     # Sumar los productos escalares individuales para obtener el resultado final
     resultado_final = sum(productos)
     print("\nResultado final del producto escalar entre las columnas:", resultado_final)
@@ -382,18 +326,7 @@ elif A.shape != C.shape:
     
 else:
     n_columnas = A.shape[1]
-    productos = []
-    
-     # Calcular el producto escalar entre las columnas correspondientes
-    for i in range(n_columnas):
-        columna_matriz_1 = A[:, i]
-        columna_matriz_2 = B[:, i]
-        columna_matriz_3 = C[:, i]
-        producto_escalar = np.sum(columna_matriz_1 * columna_matriz_2 * columna_matriz_3)
-        productos.append(producto_escalar)
-        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
-
-    # Sumar los productos escalares individuales para obtener el resultado final
+    productos = productos = productoEscalar3Matrices(A,B,C)
     resultado_final = sum(productos)
     print("\nResultado final del producto escalar entre las columnas:", resultado_final)
 
@@ -421,18 +354,7 @@ elif A.shape != C.shape:
     
 else:
     n_columnas = A.shape[1]
-    productos = []
-    
-     # Calcular el producto escalar entre las columnas correspondientes
-    for i in range(n_columnas):
-        columna_matriz_1 = A[:, i]
-        columna_matriz_2 = B[:, i]
-        columna_matriz_3 = C[:, i]
-        producto_escalar = np.sum(columna_matriz_1 * columna_matriz_2 * columna_matriz_3)
-        productos.append(producto_escalar)
-        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
-
-    # Sumar los productos escalares individuales para obtener el resultado final
+    productos = productoEscalar3Matrices(A,B,C)
     resultado_final = sum(productos)
     print("\nResultado final del producto escalar entre las columnas:", resultado_final)
 
@@ -446,13 +368,7 @@ print("Resultado del noveno término:", noveno_termino)
 A = np.array(Xij)
 B = np.array(list(map(list, zip(*Aij))))
 n_columnas = A.shape[1]
-productos = []
-for i in range(n_columnas):
-        columna_matriz_1 = A[:, i]
-        columna_matriz_2 = B[:, i]
-        producto_escalar = np.dot(columna_matriz_1, columna_matriz_2)
-        productos.append(producto_escalar)
-        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
+productos = productoEscalar2Matrices(A,B)
 resultado_final = sum(productos)
 decimo_termino = (resultado_final*(RECj * SPj))
 
