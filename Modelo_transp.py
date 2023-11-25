@@ -43,6 +43,26 @@ OPLk = 0  # Costo operativo de Centro Ambiental
 cantidad_de_ks = 0 # Cantidad de Centros ambientales definidos en la celda G31
 CC = 0 # Costo de transporte de camiones recolectores
 TC = 0 # Costo de transporte de camiones de transferencia
+Vc = 0 #Capacidad en m3 de camion recolector
+Ec = 0 #Eficiencia de carga en % recolector
+Dc = 0 #Densidad en tn/m3 de RSU en camion recolector
+Rc = 0 #Tasa de reserva de camiones recolectores
+T1c = 0 # Horas de trabajo de camion recolector
+T2c = 0 # Horas de preparación de camion recolector
+T3c = 0 # Horas de limpieza de camion recolector
+T4c = 0 # Horas de carga de camion recolector
+T5c = 0 # Horas de descarga de camion recolector
+SPDc = 0 # Velocidad de camion recolector
+Vt = 0 #Capacidad en m3 de camion transportador
+Et = 0 #Eficiencia de carga en % transportador
+Dt = 0 #Densidad en tn/m3 de RSU en camion transportador
+Rt = 0 #Tasa de reserva de camiones transportadores
+T1t = 0 # Horas de trabajo de camion transportador
+T2t = 0 # Horas de preparación de camion transportador
+T3t = 0 # Horas de limpieza de camion transportador
+T4t = 0 # Horas de carga de camion transportador
+T5t = 0 # Horas de descarga de camion transportador
+SPDt = 0 # Velocidad de camion transportador
 
 # Itera a través de las hojas del diccionario y muestra todos los registros de cada hoja
 for nombre_hoja, datos in datos_excel.items():
@@ -56,6 +76,26 @@ for nombre_hoja, datos in datos_excel.items():
        cantidad_de_ks = datos.iloc[29,6]
        CC = datos.iloc[14,5]
        TC = datos.iloc[14,6]
+       Vc = datos.iloc[8,5]
+       Ec = datos.iloc[9,5]
+       Dc = datos.iloc[12,5]
+       Rc = datos.iloc[13,5]
+       T1c = datos.iloc[2,5]
+       T2c = (datos.iloc[3,5])/60
+       T3c = (datos.iloc[4,5])/60
+       T4c = datos.iloc[5,5]
+       T5c = (datos.iloc[6,5])/60
+       SPDc = datos.iloc[7,5]
+       Vt = datos.iloc[8,6]
+       Et = datos.iloc[9,6]
+       Dt = datos.iloc[12,6]
+       Rt = datos.iloc[13,6]
+       T1t = datos.iloc[2,6]
+       T2t = (datos.iloc[3,6])/60
+       T3t = (datos.iloc[4,6])/60
+       T4t = datos.iloc[5,6]
+       T5t = (datos.iloc[6,6])/60
+       SPDt = datos.iloc[7,6]
     
               
     if nombre_hoja == 'Gen-Cap':
@@ -565,4 +605,100 @@ print("Resultado del decimo término:", decimo_termino)
 
 ###############################HASTA ACÁ decimo TÉRMINO######################
 
-print("LA SUMAMAM: ", primer_termino + segundo_termino + tercer_termino + cuarto_termino + quinto_termino + sexto_termino + septimo_termino + octavo_termino + noveno_termino - decimo_termino)
+#print("LA SUMAMAM: ", primer_termino + segundo_termino + tercer_termino + cuarto_termino + quinto_termino + sexto_termino + septimo_termino + octavo_termino + noveno_termino - decimo_termino)
+
+
+
+###################################### Comienza la segunda expresión ################
+
+print("Comienzo de la segunda expresión  - Cálculo de camiones")
+
+#Primer término de camiones
+
+Qwc = Vc*Ec*Dc / (1+Rc)
+TRcij= (T1c-(T2c+T3c))/((2*Dij/SPDc)+T4c+T5c)
+
+matriz_transpuesta = list(map(list, zip(*Aij)))
+
+A = np.array(matriz_transpuesta)
+B = np.array(TRcij)
+NCij = A / (Qwc*B)
+
+
+A = np.array(Xij)
+B = np.array(NCij)
+n_columnas = A.shape[1]
+productos = []
+for i in range(n_columnas):
+        columna_matriz_1 = A[:, i]
+        columna_matriz_2 = B[:, i]
+        producto_escalar = np.dot(columna_matriz_1, columna_matriz_2)
+        productos.append(producto_escalar)
+        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
+resultado_final = sum(productos)
+primer_termino_segundaexp = (resultado_final)
+
+print("Resultado del primer termino segunda expresión:", primer_termino_segundaexp)
+
+###################################### Hasta acá primer termino segunda exp ################
+
+
+#Segundo término de camiones
+
+Qwt = Vt*Et*Dt / (1+Rt)
+TRtjk= (T1t-(T2t+T3t))/((2*Djk/SPDt)+T4t+T5t)
+
+
+A = np.array(Bjk)
+B = np.array(TRtjk)
+NTjk = A / (Qwt*B)
+
+
+A = np.array(Yjk)
+B = np.array(NTjk)
+n_columnas = A.shape[1]
+productos = []
+for i in range(n_columnas):
+        columna_matriz_1 = A[:, i]
+        columna_matriz_2 = B[:, i]
+        producto_escalar = np.dot(columna_matriz_1, columna_matriz_2)
+        productos.append(producto_escalar)
+        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
+resultado_final = sum(productos)
+segundo_termino_segundaexp = (resultado_final)
+
+print("Resultado del segundo termino segunda expresión:", segundo_termino_segundaexp)
+
+
+########################HASTA ACÁ SEGUNDO TÉRMINO DE LA SEGUNDA EXPRESIÓN #################
+
+#Tercer término de camiones
+
+
+TRcik= (T1c-(T2c+T3c))/((2*Dik/SPDc)+T4c+T5c)
+matriz_transpuesta = list(map(list, zip(*Cik)))
+
+A = np.array(matriz_transpuesta)
+B = np.array(TRcik)
+NCik = A / (Qwc*B)
+
+A = np.array(Zik)
+B = np.array(NCik)
+n_columnas = A.shape[1]
+productos = []
+for i in range(n_columnas):
+        columna_matriz_1 = A[:, i]
+        columna_matriz_2 = B[:, i]
+        producto_escalar = np.dot(columna_matriz_1, columna_matriz_2)
+        productos.append(producto_escalar)
+        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
+resultado_final = sum(productos)
+tercer_termino_segundaexp = (resultado_final)
+
+
+
+#########################SUMA TOTAL DE CAMIONES
+
+print(" La flota total de camiones se constituye por ", primer_termino_segundaexp + tercer_termino_segundaexp , "de camiones recolectores y ", segundo_termino_segundaexp, "de camiones transportadores, dando un total de " , primer_termino_segundaexp + segundo_termino_segundaexp + tercer_termino_segundaexp, "camiones")
+
+
