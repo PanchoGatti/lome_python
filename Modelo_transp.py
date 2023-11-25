@@ -146,10 +146,10 @@ for nombre_hoja, datos in datos_excel.items():
         #         numeric_values.pop()
 ##########################################################################################Hasta acá hizo tino#########################
 Xij = [
-    [1, 0, 0, 0],
-    [0, 1, 0, 0],
-    [1, 0, 0, 0],
-    [0, 1, 0, 0]
+    [1, 1, 1, 1],
+    [1, 1, 1, 1],
+    [1, 1, 1, 1],
+    [1, 1, 1, 1]
 ]
 # # Ejemplo de uso:
 matriz_transpuesta = list(map(list, zip(*Aij)))
@@ -248,10 +248,10 @@ print("Matriz resultante BJK:")
 print(Bjk)
 
 Yjk = [
-    [1, 0],
-    [1, 0],
-    [1, 0],
-    [1, 0]
+    [1, 1],
+    [1, 1],
+    [1, 1],
+    [1, 1]
 ]
 
 A = np.array(Yjk)
@@ -315,10 +315,10 @@ print("Resultado del tercer término:", tercer_termino)
 matriz_transpuesta = list(map(list, zip(*Cik)))
 
 Zik = [
-    [0, 0],
-    [0, 0],
-    [0, 0],
-    [0, 0]
+    [1, 1],
+    [1, 1],
+    [1, 1],
+    [1, 1]
 ]
 
 A = np.array(Zik)
@@ -672,7 +672,7 @@ print("Resultado del segundo termino segunda expresión:", segundo_termino_segun
 
 ########################HASTA ACÁ SEGUNDO TÉRMINO DE LA SEGUNDA EXPRESIÓN #################
 
-#Tercer término de camiones
+print("Tercer término de camiones!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
 
 TRcik= (T1c-(T2c+T3c))/((2*Dik/SPDc)+T4c+T5c)
@@ -681,6 +681,8 @@ matriz_transpuesta = list(map(list, zip(*Cik)))
 A = np.array(matriz_transpuesta)
 B = np.array(TRcik)
 NCik = A / (Qwc*B)
+
+print(NCik)
 
 A = np.array(Zik)
 B = np.array(NCik)
@@ -701,4 +703,9 @@ tercer_termino_segundaexp = (resultado_final)
 
 print(" La flota total de camiones se constituye por ", primer_termino_segundaexp + tercer_termino_segundaexp , "de camiones recolectores y ", segundo_termino_segundaexp, "de camiones transportadores, dando un total de " , primer_termino_segundaexp + segundo_termino_segundaexp + tercer_termino_segundaexp, "camiones")
 
+print(primer_termino_segundaexp)
+print(segundo_termino_segundaexp)
+print(tercer_termino_segundaexp)
+
+###################################### Comienza la tercera expresión ################
 
