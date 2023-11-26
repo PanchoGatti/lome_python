@@ -38,3 +38,21 @@ def productoEscalar3Matrices(A , B, C):
         producto_escalar = np.sum(columna_matriz_1 * columna_matriz_2 * columna_matriz_3)
         productos.append(producto_escalar)
     return productos
+
+def misma_cantidad_filas(matriz1, matriz2):
+    filas_matriz1 = len(matriz1)
+    filas_matriz2 = len(matriz2)
+    
+    return filas_matriz1 == filas_matriz2
+
+def evaluarPrimeraRestriccion(Xij,Zik):
+    num_filas = Xij.shape[0]
+    # Variable para verificar si se encontró alguna suma distinta de 1
+    correcto = True
+    # Realizar la suma de cada fila de A con la respectiva fila de B
+    for i in range(num_filas):
+        suma_fila = np.sum(Xij[i]) + np.sum(Zik[i])
+        if suma_fila != 1:
+            correcto = False
+            break
+    return correcto
