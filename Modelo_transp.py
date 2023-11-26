@@ -429,6 +429,12 @@ print("Resultado del decimo término:", decimo_termino)
 
 
 
+
+
+
+
+
+
 ###################################### Comienza la segunda expresión ################
 
 print("Comienzo de la segunda expresión  - Cálculo de camiones")
@@ -657,3 +663,40 @@ else:
     print("El costo total es de: ", primer_termino + segundo_termino + tercer_termino + cuarto_termino + quinto_termino + sexto_termino + septimo_termino + octavo_termino + noveno_termino - decimo_termino)
     print(" La flota total es de " , primer_termino_segundaexp + segundo_termino_segundaexp + tercer_termino_segundaexp, "camiones")
     print("Los gases invernadero total son: ", primer_termino_tercerexp + segundo_termino_tercerexp + tercer_termino_tercerexp)
+    
+ ###############################################################################################################################################   
+    
+    print ("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+    
+def generar_combinaciones(matriz, i, j, m, n, combinaciones):
+    if i == m:
+        combinaciones.append([fila[:] for fila in matriz])
+        return
+
+    for k in range(2):
+        matriz[i][j] = k
+        if j + 1 < n:
+            generar_combinaciones(matriz, i, j + 1, m, n, combinaciones)
+        else:
+            generar_combinaciones(matriz, i + 1, 0, m, n, combinaciones)
+
+
+matriz_dimensiones = Xij
+filas = len(matriz_dimensiones)
+columnas = len(matriz_dimensiones[0])
+
+# Inicializar una matriz de dimensiones mxn con ceros
+matriz = [[0 for _ in range(columnas)] for _ in range(filas)]
+
+# Lista para almacenar las matrices con combinaciones binarias
+matrices_combinadas = []
+
+# Generar todas las combinaciones binarias posibles
+generar_combinaciones(matriz, 0, 0, filas, columnas, matrices_combinadas)
+
+# Imprimir las matrices generadas
+for matrix in matrices_combinadas:
+    print(matrix) 
+    
+
+    
