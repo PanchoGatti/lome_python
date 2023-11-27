@@ -56,3 +56,20 @@ def evaluarPrimeraRestriccion(Xij,Zik):
             correcto = False
             break
     return correcto
+
+def evaluarSegundaRestriccion(A, B):
+    num_filas_A, num_columnas_A = A.shape
+    # Variable para verificar si se cumple la condición
+    condicion_cumplida = True
+    # Verificar si la suma de las columnas de A es igual a 0 y las filas correspondientes de B también son 0
+    for i in range(num_columnas_A):
+        suma_columna_A = np.sum(A[:, i])
+        suma_fila_B = np.sum(B[i])
+        if suma_columna_A == 0:
+           if suma_fila_B != 0:
+             condicion_cumplida = False
+        if suma_columna_A !=0:
+           if suma_fila_B == 1:
+             condicion_cumplida = True
+            
+    return condicion_cumplida
