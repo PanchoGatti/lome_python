@@ -172,7 +172,6 @@ producto_escalar = np.sum(A * B* C)
 
 print("\nEl producto escalar de las matrices A y B es:", producto_escalar)
 
-###################################################### HASTA ACA HIZO TINO 22/11 17HS###################3
     
     # Verificar si las matrices tienen la misma forma
 if A.shape != B.shape:
@@ -695,8 +694,6 @@ matrices_combinadas = []
 generar_combinaciones(matriz, 0, 0, filas, columnas, matrices_combinadas)
 
 # Imprimir las matrices generadas
-for matrix in matrices_combinadas:
-    print(matrix) 
-    
-
+#for matrix in matrices_combinadas:
+   # print(matrix) 
     
