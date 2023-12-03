@@ -4,6 +4,9 @@ def generar_matriz(arr):
     matriz = [[1 if num == 0 else 0] for num in arr]
     return matriz
 
+def generar_matriz_nueva(arr):
+    matriz = [[9999 if num == 0 else num] for num in arr]
+    return matriz
 
 def sumaproducto(matriz1, matriz2):
     if len(matriz1[0]) != len(matriz2):
@@ -78,4 +81,31 @@ def evaluarSegundaRestriccion(A, B):
 
     return True
 
+def evaluarTerceraRestriccion(A, B):
+    n = len(A)  # Número de filas de A
+    m = len(B[0])  # Número de columnas de B
+
+    for i in range(n):
+        suma_columna_A = sum([fila[i] for fila in A])  # Suma de la columna i de A
+        suma_fila_B = sum(B[i])  # Suma de la fila i de B
+        
+        if suma_columna_A <= suma_fila_B :
+            continue
+        else:
+                return False
+    return True
+
+def evaluarCuartaRestriccion(A, B):
+    n = len(B)  # Número de filas de B
+    m = len(B[0])  # Número de columnas de B
+
+    for i in range(n):
+        suma_columna_A = sum(A[i])  # Suma de la fila i de A
+        suma_fila_B = sum(B[i])  # Suma de la fila i de B
+
+        if suma_columna_A <= suma_fila_B:
+            continue
+        else:
+            return False
+    return True
     
