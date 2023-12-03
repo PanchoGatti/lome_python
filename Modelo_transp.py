@@ -164,16 +164,16 @@ Xij_inicial = [
 ]
 Yjk_inicial = [
     [1, 0],
-    [1, 0],
+    [1, 1],
     [1, 0],
     [1, 0]
 ]
 
 Zik_inicial = [
-    [0, 0],
-    [0, 0],
-    [0, 0],
-    [0, 0]
+    [1, 1],
+    [1, 1],
+    [1, 1],
+    [1, 1]
 ]
 matrices_iteradas_Xij = matriz_iterada(Xij_inicial)
 matrices_iteradas_Zik = matriz_iterada(Zik_inicial)
@@ -181,218 +181,168 @@ matrices_iteradas_Yjk = matriz_iterada(Yjk_inicial)
 matriz_optimaXij = Xij_inicial
 matriz_optimaZik = Zik_inicial
 matriz_optimaYjk = Yjk_inicial
-Yjk = Yjk_inicial
-Zik = Zik_inicial
+# Yjk = Yjk_inicial
+# Zik = Zik_inicial
 vector_termino_primero=[]
 valor_suma_minimo=999999999999999999999999999
-hora_actual = datetime.now().time()
+hora_actual = datetime.now()
 print("La hora actual es:", hora_actual)
 for Xij in matrices_iteradas_Xij:
     for Zik in matrices_iteradas_Zik:
-        # for Yjk in matrices_iteradas_Yjk:
+        for Yjk in matrices_iteradas_Yjk:
             if(evaluarPrimeraRestriccion(np.array(Xij),np.array(Zik))):
-                matriz_transpuesta = list(map(list, zip(*Aij)))
-                A = np.array(Xij)
-                B = np.array(matriz_transpuesta)
-                C = np.array(TSj)
-                    
+                if(evaluarSegundaRestriccion (Xij,Yjk)):
+                    matriz_transpuesta = list(map(list, zip(*Aij)))
+                    A = np.array(Xij)
+                    B = np.array(matriz_transpuesta)
+                    C = np.array(TSj)
+                        
+                        # Verificar si las matrices tienen la misma forma
+                    if A.shape != B.shape:
+                        print("Las matrices no tienen la misma forma.")
+                    else:
+                        productos = productoEscalar2Matrices(A,B)
+                        resultado_final = sum(productos)
+                    vector_resultante = np.array(productos)
+                    vector_termino_primero = vector_resultante
+                    resultado_multiplicacion = np.dot(vector_resultante, C)
+                    primer_termino = resultado_multiplicacion*INVTSj
+                    #####HASTA ACÁ LLEGA EL PRIMER TÉRMINO, ARRANCA EL SEGUNDO. SE TOMAN VARIAS VARIABLES YA DEFINIDAS###
+
+                    segundo_termino = resultado_final*OPTSj
+                    #HASTA ACÁ LLEGA EL SEGUNDO TÉRMINO, ARRANCA EL TERCERO. SE TOMAN VARIAS VARIABLES YA DEFINIDAS###
+                    Bjk = np.tile(vector_resultante, (cantidad_de_ks, 1)).T
+                    A = np.array(Yjk)
+                    B = np.array(Bjk)
+                    C = np.array(Ik)
                     # Verificar si las matrices tienen la misma forma
-                if A.shape != B.shape:
-                    print("Las matrices no tienen la misma forma.")
-                else:
-                    productos = productoEscalar2Matrices(A,B)
-                    resultado_final = sum(productos)
-                vector_resultante = np.array(productos)
-                vector_termino_primero = vector_resultante
-                resultado_multiplicacion = np.dot(vector_resultante, C)
-                primer_termino = resultado_multiplicacion*INVTSj
-                #####HASTA ACÁ LLEGA EL PRIMER TÉRMINO, ARRANCA EL SEGUNDO. SE TOMAN VARIAS VARIABLES YA DEFINIDAS###
+                    if A.shape != B.shape:
+                        print("Las matrices no tienen la misma forma.")
+                    else:
+                        productos = productoEscalar2Matrices(A,B)
+                        resultado_final = sum(productos)
+                        # Convertir la lista de productos a un arreglo NumPy
+                    vector_resultante = np.array(productos)
+                    resultado_multiplicacion = np.dot(vector_resultante, C)
+                    tercer_termino = resultado_multiplicacion*INVLk
+                    ######HASTA ACA TERCER TERMINO############
 
-                segundo_termino = resultado_final*OPTSj
-                #HASTA ACÁ LLEGA EL SEGUNDO TÉRMINO, ARRANCA EL TERCERO. SE TOMAN VARIAS VARIABLES YA DEFINIDAS###
-                # Bjk = np.tile(vector_resultante, (cantidad_de_ks, 1)).T
-                # A = np.array(Yjk)
-                # B = np.array(Bjk)
-                # C = np.array(Ik)
-                # # Verificar si las matrices tienen la misma forma
-                # if A.shape != B.shape:
-                #     print("Las matrices no tienen la misma forma.")
-                # else:
-                #     productos = productoEscalar2Matrices(A,B)
-                #     resultado_final = sum(productos)
-                #     # Convertir la lista de productos a un arreglo NumPy
-                # vector_resultante = np.array(productos)
-                # resultado_multiplicacion = np.dot(vector_resultante, C)
-                # tercer_termino = resultado_multiplicacion*INVLk
-                ######HASTA ACA TERCER TERMINO############
+                    matriz_transpuesta = list(map(list, zip(*Cik)))
+                    A = np.array(Zik)
+                    B = np.array(matriz_transpuesta)
+                    C = np.array(Ik)
 
-                matriz_transpuesta = list(map(list, zip(*Cik)))
-                A = np.array(Zik)
-                B = np.array(matriz_transpuesta)
-                C = np.array(Ik)
-
-                # Verificar si las matrices tienen la misma forma
-                if A.shape != B.shape:
-                    print("Las matrices no tienen la misma forma.")
-                else:
-                    productos = productoEscalar2Matrices(A,B)
-                    resultado_final = sum(productos)
-                    # Convertir la lista de productos a un arreglo NumPy
-                vector_resultante = np.array(productos)
-                resultado_multiplicacion = np.dot(vector_resultante, C)
-                cuarto_termino = resultado_multiplicacion*INVLk
-
-                #################################HASTA ACÁ CUARTO TÉRMINO#############################
-
-                # A = np.array(Yjk)
-                # B = np.array(Bjk)
-
-                # # Verificar si las matrices tienen la misma forma
-                # if A.shape != B.shape:
-                #     print("Las matrices no tienen la misma forma.")
-                # else:
-                #     productos = productoEscalar2Matrices(A,B)
-                #     resultado_final = sum(productos)
-                # quinto_termino = resultado_final*OPLk
-
-                ######################HASTA ACÁ QUINTO TÉRMINO###############################
-                matriz_transpuesta = list(map(list, zip(*Cik)))
-                A = np.array(Zik)
-                B = np.array(matriz_transpuesta)
-                # Verificar si las matrices tienen la misma forma
-                if A.shape != B.shape:
-                    print("Las matrices no tienen la misma forma.")
-                else:
-                    productos = productoEscalar2Matrices(A,B)
-                    resultado_final = sum(productos)
-                sexto_termino = resultado_final*OPLk
-
-                ###############################HASTA ACÁ SEXTO TÉRMINO######################
-
-                matriz_transpuesta = list(map(list, zip(*Aij)))
-                A = np.array(Xij)
-                B = np.array(matriz_transpuesta)
-                C = np.array(Dij)
-
-                # Verificar si las matrices tienen la misma forma
-                if A.shape != B.shape:
-                    print("Las matrices no tienen la misma forma.")
-
-                elif A.shape != C.shape:
-                    print("Las matrices no tienen la misma forma")
-                    
-                else:
-                    productos = productoEscalar3Matrices(A,B,C)
-                    # Sumar los productos escalares individuales para obtener el resultado final
-                    resultado_final = sum(productos)
-                septimo_termino = resultado_final*CC
-
-                ###############################HASTA ACÁ SÉPTIMO TÉRMINO######################
-                matriz_transpuesta = list(map(list, zip(*Cik)))
-                A = np.array(Zik)
-                B = np.array(matriz_transpuesta)
-                C = np.array(Dik)
                     # Verificar si las matrices tienen la misma forma
-                if A.shape != B.shape:
-                    print("Las matrices no tienen la misma forma.")
+                    if A.shape != B.shape:
+                        print("Las matrices no tienen la misma forma.")
+                    else:
+                        productos = productoEscalar2Matrices(A,B)
+                        resultado_final = sum(productos)
+                        # Convertir la lista de productos a un arreglo NumPy
+                    vector_resultante = np.array(productos)
+                    resultado_multiplicacion = np.dot(vector_resultante, C)
+                    cuarto_termino = resultado_multiplicacion*INVLk
 
-                elif A.shape != C.shape:
-                    print("Las matrices no tienen la misma forma")
-                    
-                else:
-                    productos = productos = productoEscalar3Matrices(A,B,C)
+                    #################################HASTA ACÁ CUARTO TÉRMINO#############################
+
+                    A = np.array(Yjk)
+                    B = np.array(Bjk)
+
+                    # Verificar si las matrices tienen la misma forma
+                    if A.shape != B.shape:
+                        print("Las matrices no tienen la misma forma.")
+                    else:
+                        productos = productoEscalar2Matrices(A,B)
+                        resultado_final = sum(productos)
+                    quinto_termino = resultado_final*OPLk
+
+                    ######################HASTA ACÁ QUINTO TÉRMINO###############################
+                    matriz_transpuesta = list(map(list, zip(*Cik)))
+                    A = np.array(Zik)
+                    B = np.array(matriz_transpuesta)
+                    # Verificar si las matrices tienen la misma forma
+                    if A.shape != B.shape:
+                        print("Las matrices no tienen la misma forma.")
+                    else:
+                        productos = productoEscalar2Matrices(A,B)
+                        resultado_final = sum(productos)
+                    sexto_termino = resultado_final*OPLk
+
+                    ###############################HASTA ACÁ SEXTO TÉRMINO######################
+
+                    matriz_transpuesta = list(map(list, zip(*Aij)))
+                    A = np.array(Xij)
+                    B = np.array(matriz_transpuesta)
+                    C = np.array(Dij)
+
+                    # Verificar si las matrices tienen la misma forma
+                    if A.shape != B.shape:
+                        print("Las matrices no tienen la misma forma.")
+
+                    elif A.shape != C.shape:
+                        print("Las matrices no tienen la misma forma")
+                        
+                    else:
+                        productos = productoEscalar3Matrices(A,B,C)
+                        # Sumar los productos escalares individuales para obtener el resultado final
+                        resultado_final = sum(productos)
+                    septimo_termino = resultado_final*CC
+
+                    ###############################HASTA ACÁ SÉPTIMO TÉRMINO######################
+                    matriz_transpuesta = list(map(list, zip(*Cik)))
+                    A = np.array(Zik)
+                    B = np.array(matriz_transpuesta)
+                    C = np.array(Dik)
+                        # Verificar si las matrices tienen la misma forma
+                    if A.shape != B.shape:
+                        print("Las matrices no tienen la misma forma.")
+
+                    elif A.shape != C.shape:
+                        print("Las matrices no tienen la misma forma")
+                        
+                    else:
+                        productos = productos = productoEscalar3Matrices(A,B,C)
+                        resultado_final = sum(productos)
+                    octavo_termino = resultado_final*CC
+
+                    ###############################HASTA ACÁ Octqavo TÉRMINO######################
+                    matriz_transpuesta = list(map(list, zip(*Bjk)))
+
+                    A = np.array(Yjk)
+                    B = np.array(Bjk)
+                    C = np.array(Djk)
+                        # Verificar si las matrices tienen la misma forma
+                    if A.shape != B.shape:
+                        print("Las matrices no tienen la misma forma.")
+
+                    elif A.shape != C.shape:
+                        print("Las matrices no tienen la misma forma")
+                        
+                    else:
+                        productos = productoEscalar3Matrices(A,B,C)
+                        resultado_final = sum(productos)
+                    noveno_termino = resultado_final*TC
+
+                    ###############################HASTA ACÁ noveno TÉRMINO######################
+
+                    # Mostrar el vector resultante calculado anteriormente, de hacer Xij(A) * Aij(B)
+                    A = np.array(Xij)
+                    B = np.array(list(map(list, zip(*Aij))))
+
+                    productos = productoEscalar2Matrices(A,B)
                     resultado_final = sum(productos)
-                octavo_termino = resultado_final*CC
-
-                ###############################HASTA ACÁ Octqavo TÉRMINO######################
-                # matriz_transpuesta = list(map(list, zip(*Bjk)))
-
-                # A = np.array(Yjk)
-                # B = np.array(Bjk)
-                # C = np.array(Djk)
-                #     # Verificar si las matrices tienen la misma forma
-                # if A.shape != B.shape:
-                #     print("Las matrices no tienen la misma forma.")
-
-                # elif A.shape != C.shape:
-                #     print("Las matrices no tienen la misma forma")
-                    
-                # else:
-                #     productos = productoEscalar3Matrices(A,B,C)
-                #     resultado_final = sum(productos)
-                # noveno_termino = resultado_final*TC
-
-                ###############################HASTA ACÁ noveno TÉRMINO######################
-
-                # Mostrar el vector resultante calculado anteriormente, de hacer Xij(A) * Aij(B)
-                A = np.array(Xij)
-                B = np.array(list(map(list, zip(*Aij))))
-
-                productos = productoEscalar2Matrices(A,B)
-                resultado_final = sum(productos)
-                decimo_termino = (resultado_final*(RECj * SPj))
-                ###############################HASTA ACÁ decimo TÉRMINO######################
-                sumatotal = (primer_termino + segundo_termino + cuarto_termino  + sexto_termino + septimo_termino + octavo_termino - decimo_termino)
-                if(sumatotal < valor_suma_minimo):
-                    valor_suma_minimo = sumatotal
-                    matriz_optimaXij = Xij
-                    matriz_optimaZik = Zik
+                    decimo_termino = (resultado_final*(RECj * SPj))
+                    ###############################HASTA ACÁ decimo TÉRMINO######################
+                    sumatotal = (primer_termino + segundo_termino + tercer_termino + cuarto_termino + quinto_termino  + sexto_termino + septimo_termino + octavo_termino + noveno_termino - decimo_termino)
+                    if(sumatotal < valor_suma_minimo):
+                        valor_suma_minimo = sumatotal
+                        matriz_optimaXij = Xij
+                        matriz_optimaZik = Zik
+                        matriz_optimaYjk = Yjk
                     
 print("Optima Xij", matriz_optimaXij)
 print("Optima Zik", matriz_optimaZik)
-print("suma valor minimo" ,valor_suma_minimo)
-valor_suma_minimo_nuevo=999999999999999999999999999
-sumatotal_nueva = 0
-for Yjk in matrices_iteradas_Yjk:
-    if(evaluarSegundaRestriccion(np.array(matriz_optimaXij),np.array(Yjk))):
-        Bjk = np.tile(vector_termino_primero, (cantidad_de_ks, 1)).T
-        A = np.array(Yjk)
-        B = np.array(Bjk)
-        C = np.array(Ik)
-        # Verificar si las matrices tienen la misma forma
-        if A.shape != B.shape:
-            print("Las matrices no tienen la misma forma.")
-        else:
-            productos = productoEscalar2Matrices(A,B)
-            resultado_final = sum(productos)
-            # Convertir la lista de productos a un arreglo NumPy
-        vector_resultante = np.array(productos)
-        resultado_multiplicacion = np.dot(vector_resultante, C)
-        tercer_termino = resultado_multiplicacion*INVLk
-        ######HASTA ACA TERCER TERMINO############
-        A = np.array(Yjk)
-        B = np.array(Bjk)
-
-        # Verificar si las matrices tienen la misma forma
-        if A.shape != B.shape:
-            print("Las matrices no tienen la misma forma.")
-        else:
-            productos = productoEscalar2Matrices(A,B)
-            resultado_final = sum(productos)
-        quinto_termino = resultado_final*OPLk
-        ######################HASTA ACÁ QUINTO TÉRMINO###############################
-        matriz_transpuesta = list(map(list, zip(*Bjk)))
-        A = np.array(Yjk)
-        B = np.array(Bjk)
-        C = np.array(Djk)
-            # Verificar si las matrices tienen la misma forma
-        if A.shape != B.shape:
-            print("Las matrices no tienen la misma forma.")
-
-        elif A.shape != C.shape:
-            print("Las matrices no tienen la misma forma")
-            
-        else:
-            productos = productoEscalar3Matrices(A,B,C)
-            resultado_final = sum(productos)
-        noveno_termino = resultado_final*TC
-        ###############################HASTA ACÁ noveno TÉRMINO######################
-        sumatotal_nueva = (tercer_termino + quinto_termino + noveno_termino)
-        if(sumatotal_nueva < valor_suma_minimo_nuevo):
-               valor_suma_minimo_nuevo = sumatotal_nueva
-               matriz_optimaYjk = Yjk
-    
-print("suma valor minimo nuevo" ,sumatotal_nueva)
-print("total total: ", sumatotal + sumatotal_nueva)
 print("Optima Yjk", matriz_optimaYjk)
-print("La hora actual es:", hora_actual)
+print("suma valor minimo" ,valor_suma_minimo)
+final =  datetime.now() - hora_actual
+print("tiempo total de ejecución en minutos: ", final.total_seconds()/60)
