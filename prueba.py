@@ -5,7 +5,9 @@ import numpy as np
 
 def generar_combinaciones(matriz, i, j, m, n, combinaciones):
     if i == m:
-        combinaciones.append([fila[:] for fila in matriz])
+        # Verificar restricción: como máximo un valor 1 por fila
+        if all(sum(fila) <= 1 for fila in matriz):
+            combinaciones.append([fila[:] for fila in matriz])
         return
 
     for k in range(2):
