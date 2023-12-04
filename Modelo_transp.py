@@ -157,31 +157,31 @@ for nombre_hoja, datos in datos_excel.items():
         Cik = np.tile(numeric_arrays[0], (m,1))
 
 
-Xij_inicial = [
-    [1, 0, 0, 0],
-    [0, 1, 0, 0],
-    [1, 0, 0, 0],
-    [0, 1, 0, 0]
-]
-Yjk_inicial = [
-    [1, 0],
-    [1, 1],
-    [1, 0],
-    [1, 0]
-]
+# Xij_inicial = [
+#     [1, 0, 0, 0],
+#     [0, 1, 0, 0],
+#     [1, 0, 0, 0],
+#     [0, 1, 0, 0]
+# ]
+# Yjk_inicial = [
+#     [1, 0],
+#     [1, 1],
+#     [1, 0],
+#     [1, 0]
+# ]
 
-Zik_inicial = [
-    [1, 1],
-    [1, 1],
-    [1, 1],
-    [1, 1]
-]
-matrices_iteradas_Xij = matriz_iterada(Xij_inicial)
-matrices_iteradas_Zik = matriz_iterada(Zik_inicial)
-matrices_iteradas_Yjk = matriz_iterada(Yjk_inicial)
-matriz_optimaXij = Xij_inicial
-matriz_optimaZik = Zik_inicial
-matriz_optimaYjk = Yjk_inicial
+# Zik_inicial = [
+#     [1, 1],
+#     [1, 1],
+#     [1, 1],
+#     [1, 1]
+# ]
+matrices_iteradas_Xij = matriz_iterada(Dij)
+matrices_iteradas_Zik = matriz_iterada(Dik)
+matrices_iteradas_Yjk = matriz_iterada(Djk)
+matriz_optimaXij = Dij
+matriz_optimaZik = Dik
+matriz_optimaYjk = Djk
 # Yjk = Yjk_inicial
 # Zik = Zik_inicial
 vector_termino_primero=[]
@@ -353,3 +353,102 @@ print("Optima Yjk", matriz_optimaYjk)
 print("suma valor minimo" ,valor_suma_minimo)
 final =  datetime.now() - hora_actual
 print("tiempo total de ejecución en minutos: ", final.total_seconds()/60)
+
+############################################################################################################
+
+
+
+
+
+
+###################################### Comienza la segunda expresión ################
+
+print("Comienzo de la segunda expresión  - Cálculo de camiones")
+
+#Primer término de camiones
+
+Qwc = Vc*Ec*Dc / (1+Rc)
+TRcij= (T1c-(T2c+T3c))/((2*Dij/SPDc)+T4c+T5c)
+
+matriz_transpuesta = list(map(list, zip(*Aij)))
+
+A = np.array(matriz_transpuesta)
+B = np.array(TRcij)
+NCij = A / (Qwc*B)
+
+
+A = np.array(matriz_optimaXij)
+B = np.array(NCij)
+n_columnas = A.shape[1]
+productos = []
+for i in range(n_columnas):
+        columna_matriz_1 = A[:, i]
+        columna_matriz_2 = B[:, i]
+        producto_escalar = np.dot(columna_matriz_1, columna_matriz_2)
+        productos.append(producto_escalar)
+        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
+resultado_final = sum(productos)
+primer_termino_segundaexp = (resultado_final)
+
+print("Resultado del primer termino segunda expresión:", primer_termino_segundaexp)
+
+###################################### Hasta acá primer termino segunda exp ################
+
+
+#Segundo término de camiones
+
+Qwt = Vt*Et*Dt / (1+Rt)
+TRtjk= (T1t-(T2t+T3t))/((2*Djk/SPDt)+T4t+T5t)
+
+
+A = np.array(Bjk)
+B = np.array(TRtjk)
+NTjk = A / (Qwt*B)
+
+
+A = np.array(matriz_optimaYjk)
+B = np.array(NTjk)
+n_columnas = A.shape[1]
+productos = []
+for i in range(n_columnas):
+        columna_matriz_1 = A[:, i]
+        columna_matriz_2 = B[:, i]
+        producto_escalar = np.dot(columna_matriz_1, columna_matriz_2)
+        productos.append(producto_escalar)
+        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
+resultado_final = sum(productos)
+segundo_termino_segundaexp = (resultado_final)
+
+print("Resultado del segundo termino segunda expresión:", segundo_termino_segundaexp)
+
+
+########################HASTA ACÁ SEGUNDO TÉRMINO DE LA SEGUNDA EXPRESIÓN #################
+
+#Tercer término de camiones
+TRcik= (T1c-(T2c+T3c))/((2*Dik/SPDc)+T4c+T5c)
+matriz_transpuesta = list(map(list, zip(*Cik)))
+
+A = np.array(matriz_transpuesta)
+B = np.array(TRcik)
+NCik = A / (Qwc*B)
+
+print(NCik)
+
+A = np.array(matriz_optimaZik)
+B = np.array(NCik)
+n_columnas = A.shape[1]
+productos = []
+for i in range(n_columnas):
+        columna_matriz_1 = A[:, i]
+        columna_matriz_2 = B[:, i]
+        producto_escalar = np.dot(columna_matriz_1, columna_matriz_2)
+        productos.append(producto_escalar)
+        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
+resultado_final = sum(productos)
+tercer_termino_segundaexp = (resultado_final)
+
+
+
+#########################SUMA TOTAL DE CAMIONES
+
+print(" La flota total de camiones se constituye por ", primer_termino_segundaexp + tercer_termino_segundaexp , "de camiones recolectores y ", segundo_termino_segundaexp, "de camiones transportadores, dando un total de " , primer_termino_segundaexp + segundo_termino_segundaexp + tercer_termino_segundaexp, "camiones")
