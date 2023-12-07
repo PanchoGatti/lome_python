@@ -1,22 +1,35 @@
 import numpy as np
 
-# Definir la matriz A
-A = np.array([[120, 0, 0, 0],
-              [0, 85, 0, 0],
-              [160, 0, 0, 0],
-              [0, 170, 0, 0]])
+# Definir la matriz A (cambiar estos valores según tus datos)
+A = np.array([[5, 10, 15],
+              [20, 25, 30],
+              [35, 40, 45]])
 
-# Obtener el número de columnas en la matriz A
-num_columnas = A.shape[1]
+# Definir la matriz C con las dimensiones deseadas (nueva fila y columna)
+C = np.array([(1, 1), (0, 0), (1, 1), (2, 2)])
 
-# Calcular las sumas de cada columna
+# Calcular la cantidad de filas y columnas de la matriz C
+nueva_fila = len(C)
+nueva_columna = len(C[0])
+
+# Sumar cada columna de la matriz A
 sumas_columnas = np.sum(A, axis=0)
 
-print("Las sumas de cada columna son:")
+# Crear la matriz B con las dimensiones de la matriz C
+filas, columnas = nueva_fila, nueva_columna
+B = np.zeros((filas, columnas))  # Crear una matriz B con las dimensiones obtenidas de C
+
+for i in range(filas):
+    B[i, :] = sumas_columnas[i % len(sumas_columnas)]  # Repetir el valor de la suma de la columna i en la fila i de la matriz B
+
+print("Matriz A:")
+print(A)
+
+print("\nMatriz C:")
+print(C)
+
+print("\nSumas de cada columna en A:")
 print(sumas_columnas)
 
-# Crear una nueva matriz con las sumas de las columnas
-nueva_matriz = np.array(sumas_columnas)
-
-print("\nLa nueva matriz creada con las sumas de las columnas es:")
-print(nueva_matriz)
+print("\nMatriz B generada:")
+print(B)
