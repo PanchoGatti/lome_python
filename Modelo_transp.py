@@ -373,12 +373,17 @@ TRcij= (T1c-(T2c+T3c))/((2*Dij/SPDc)+T4c+T5c)
 matriz_transpuesta = list(map(list, zip(*Aij)))
 
 A = np.array(matriz_transpuesta)
-B = np.array(TRcij)
+TRcij = np.array(TRcij)
+B = np.floor(TRcij)
+TRcij = B
 NCij = A / (Qwc*B)
 
 
 A = np.array(matriz_optimaXij)
-B = np.array(NCij)
+NCij = np.array(NCij)
+B = np.ceil(NCij)
+NCij=B
+
 n_columnas = A.shape[1]
 productos = []
 for i in range(n_columnas):
@@ -386,9 +391,10 @@ for i in range(n_columnas):
         columna_matriz_2 = B[:, i]
         producto_escalar = np.dot(columna_matriz_1, columna_matriz_2)
         productos.append(producto_escalar)
-        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
+        #print(f"Producto escalar columna {i + 1}: {producto_escalar}")
 resultado_final = sum(productos)
 primer_termino_segundaexp = (resultado_final)
+
 
 print("Resultado del primer termino segunda expresión:", primer_termino_segundaexp)
 
@@ -401,13 +407,20 @@ Qwt = Vt*Et*Dt / (1+Rt)
 TRtjk= (T1t-(T2t+T3t))/((2*Djk/SPDt)+T4t+T5t)
 
 
+
 A = np.array(Bjk)
-B = np.array(TRtjk)
+TRtjk = np.array(TRtjk)
+# Redondear los valores de la matriz A hacia arriba al número entero más cercano
+B = np.floor(TRtjk)
+TRtjk=B
+
 NTjk = A / (Qwt*B)
 
 
 A = np.array(matriz_optimaYjk)
-B = np.array(NTjk)
+NTjk = np.array(NTjk)
+B = np.ceil(NTjk)
+NTjk=B
 n_columnas = A.shape[1]
 productos = []
 for i in range(n_columnas):
@@ -415,7 +428,7 @@ for i in range(n_columnas):
         columna_matriz_2 = B[:, i]
         producto_escalar = np.dot(columna_matriz_1, columna_matriz_2)
         productos.append(producto_escalar)
-        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
+        #print(f"Producto escalar columna {i + 1}: {producto_escalar}")
 resultado_final = sum(productos)
 segundo_termino_segundaexp = (resultado_final)
 
@@ -429,13 +442,19 @@ TRcik= (T1c-(T2c+T3c))/((2*Dik/SPDc)+T4c+T5c)
 matriz_transpuesta = list(map(list, zip(*Cik)))
 
 A = np.array(matriz_transpuesta)
-B = np.array(TRcik)
+TRcik = np.array(TRcik)
+# Redondear los valores de la matriz A hacia arriba al número entero más cercano
+B = np.floor(TRcik)
+TRcik=B
+
 NCik = A / (Qwc*B)
 
-print(NCik)
+#print(NCik)
 
 A = np.array(matriz_optimaZik)
-B = np.array(NCik)
+NCik = np.array(NCik)
+B = np.ceil(NCik)
+NCik=B
 n_columnas = A.shape[1]
 productos = []
 for i in range(n_columnas):
@@ -443,7 +462,7 @@ for i in range(n_columnas):
         columna_matriz_2 = B[:, i]
         producto_escalar = np.dot(columna_matriz_1, columna_matriz_2)
         productos.append(producto_escalar)
-        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
+        #print(f"Producto escalar columna {i + 1}: {producto_escalar}")
 resultado_final = sum(productos)
 tercer_termino_segundaexp = (resultado_final)
 
@@ -452,3 +471,150 @@ tercer_termino_segundaexp = (resultado_final)
 #########################SUMA TOTAL DE CAMIONES
 
 print(" La flota total de camiones se constituye por ", primer_termino_segundaexp + tercer_termino_segundaexp , "de camiones recolectores y ", segundo_termino_segundaexp, "de camiones transportadores, dando un total de " , primer_termino_segundaexp + segundo_termino_segundaexp + tercer_termino_segundaexp, "camiones")
+
+
+
+
+
+
+
+
+
+print("Comienzo de la tercer expresión  - Cálculo de gases de EI en kg de CO2 eq")
+
+
+
+A = np.array(matriz_optimaXij)
+B = np.array(NCij)
+C = np.array(Dij)
+D = np.array(TRcij)
+
+    # Verificar si las matrices tienen la misma forma
+if A.shape != B.shape:
+    print("Las matrices no tienen la misma forma.")
+
+elif A.shape != C.shape:
+    print("Las matrices no tienen la misma forma")
+    
+elif A.shape != D.shape:
+    print("Las matrices no tienen la misma forma")
+    
+else: 
+    n_columnas = A.shape[1]
+    productos = []
+    
+     # Calcular el producto escalar entre las columnas correspondientes
+    for i in range(n_columnas):
+        columna_matriz_1 = A[:, i]
+        columna_matriz_2 = B[:, i]
+        columna_matriz_3 = C[:, i]
+        columna_matriz_4 = D[:, i]
+        producto_escalar = np.sum(columna_matriz_1 * columna_matriz_2 * columna_matriz_3 * columna_matriz_4)
+        productos.append(producto_escalar)
+        
+
+    # Sumar los productos escalares individuales para obtener el resultado final
+    resultado_final = sum(productos)
+    #print("\nResultado final del producto escalar entre las columnas:", resultado_final)
+
+    primer_termino_tercerexp = resultado_final*(Uc/KPLc)*2
+    
+    
+    
+    
+    print("Resultado del primer término de la tercer expresión:", primer_termino_tercerexp)
+    ###################################### Hasta acá primer termino de la tercer expresión ################
+    
+
+A = np.array(matriz_optimaYjk)
+B = np.array(NTjk)
+C = np.array(Djk)
+D = np.array(TRtjk)
+
+
+print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+print(matriz_optimaYjk)
+print(NTjk)
+print(Djk)
+print(TRtjk)
+
+    # Verificar si las matrices tienen la misma forma
+if A.shape != B.shape:
+    print("Las matrices no tienen la misma forma.")
+
+elif A.shape != C.shape:
+    print("Las matrices no tienen la misma forma")
+    
+elif A.shape != D.shape:
+    print("Las matrices no tienen la misma forma")
+    
+else: 
+    n_columnas = A.shape[1]
+    productos = []
+    
+     # Calcular el producto escalar entre las columnas correspondientes
+    for i in range(n_columnas):
+        columna_matriz_1 = A[:, i]
+        columna_matriz_2 = B[:, i]
+        columna_matriz_3 = C[:, i]
+        columna_matriz_4 = D[:, i]
+        producto_escalar = np.sum(columna_matriz_1 * columna_matriz_2 * columna_matriz_3 * columna_matriz_4)
+        productos.append(producto_escalar)
+      
+
+    # Sumar los productos escalares individuales para obtener el resultado final
+    resultado_final = sum(productos)
+    #print("\nResultado final del producto escalar entre las columnas:", resultado_final)
+
+    segundo_termino_tercerexp = resultado_final*(Ut/KPLt)*2
+    
+    print("Resultado del segundo término de la tercer expresión:", segundo_termino_tercerexp)
+    
+###################################### Hasta acá segundo termino de la tercer expresión ################  
+
+A = np.array(matriz_optimaZik)
+B = np.array(NCik)
+C = np.array(Dik)
+D = np.array(TRcik)
+
+    # Verificar si las matrices tienen la misma forma
+if A.shape != B.shape:
+    print("Las matrices no tienen la misma forma.")
+
+elif A.shape != C.shape:
+    print("Las matrices no tienen la misma forma")
+    
+elif A.shape != D.shape:
+    print("Las matrices no tienen la misma forma")
+    
+else: 
+    n_columnas = A.shape[1]
+    productos = []
+    
+     # Calcular el producto escalar entre las columnas correspondientes
+    for i in range(n_columnas):
+        columna_matriz_1 = A[:, i]
+        columna_matriz_2 = B[:, i]
+        columna_matriz_3 = C[:, i]
+        columna_matriz_4 = D[:, i]
+        producto_escalar = np.sum(columna_matriz_1 * columna_matriz_2 * columna_matriz_3 * columna_matriz_4)
+        productos.append(producto_escalar)
+        print(f"Producto escalar columna {i + 1}: {producto_escalar}")
+
+    # Sumar los productos escalares individuales para obtener el resultado final
+    resultado_final = sum(productos)
+    #print("\nResultado final del producto escalar entre las columnas:", resultado_final)
+
+    tercer_termino_tercerexp = resultado_final*(Ut/KPLt)*2
+    
+    print(tercer_termino_tercerexp)
+    print(tercer_termino_tercerexp + segundo_termino_tercerexp + primer_termino_tercerexp)
+    
+
+
+
+
+
+
+
+
