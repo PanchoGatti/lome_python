@@ -6,7 +6,7 @@ from Datos_ETs_CAs import datos_ets_cas
 from Datos_Loc_CAs import datos_loc_cas
 
 from Datos_Loc_ETs import datos_loc_ets
-from Utiles import evaluarCuartaRestriccion, evaluarPrimeraRestriccion, evaluarSegundaRestriccion, evaluarTerceraRestriccion, generar_matriz, generar_matriz_nueva, productoEscalar2Matrices, productoEscalar3Matrices
+from Utiles import evaluarCuartaRestriccion, evaluarPrimeraRestriccion, evaluarSegundaRestriccion, evaluarTerceraRestriccion, generar_matriz, generar_matriz_nueva, generarNuevoBjK, productoEscalar2Matrices, productoEscalar3Matrices
 from prueba import matriz_iterada
 from datetime import datetime
 
@@ -351,8 +351,6 @@ print("Optima Xij", matriz_optimaXij)
 print("Optima Zik", matriz_optimaZik)
 print("Optima Yjk", matriz_optimaYjk)
 print("suma valor minimo" ,valor_suma_minimo)
-final =  datetime.now() - hora_actual
-print("tiempo total de ejecución en minutos: ", final.total_seconds()/60)
 
 ############################################################################################################
 
@@ -406,8 +404,7 @@ print("Resultado del primer termino segunda expresión:", primer_termino_segunda
 Qwt = Vt*Et*Dt / (1+Rt)
 TRtjk= (T1t-(T2t+T3t))/((2*Djk/SPDt)+T4t+T5t)
 
-
-
+Bjk = generarNuevoBjK((np.array(matriz_optimaXij) * np.array(matriz_transpuesta)) * (1 - RECj),matriz_optimaYjk)
 A = np.array(Bjk)
 TRtjk = np.array(TRtjk)
 # Redondear los valores de la matriz A hacia arriba al número entero más cercano
@@ -608,7 +605,10 @@ else:
     tercer_termino_tercerexp = resultado_final*(Ut/KPLt)*2
     
     print(tercer_termino_tercerexp)
-    print(tercer_termino_tercerexp + segundo_termino_tercerexp + primer_termino_tercerexp)
+    print(np.ceil(tercer_termino_tercerexp + segundo_termino_tercerexp + primer_termino_tercerexp))
+
+    final =  datetime.now() - hora_actual
+    print("tiempo total de ejecución en minutos: ", final.total_seconds()/60)
     
 
 

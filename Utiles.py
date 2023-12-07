@@ -108,4 +108,19 @@ def evaluarCuartaRestriccion(A, B):
         else:
             return False
     return True
-    
+
+def generarNuevoBjK(A, C):
+
+    nueva_fila = len(C)
+    nueva_columna = len(C[0])
+
+    # Sumar cada columna de la matriz A
+    sumas_columnas = np.sum(A, axis=0)
+
+    # Crear la matriz B con las dimensiones de la matriz C
+    filas, columnas = nueva_fila, nueva_columna
+    B = np.zeros((filas, columnas))  # Crear una matriz B con las dimensiones obtenidas de C
+
+    for i in range(filas):
+        B[i, :] = sumas_columnas[i % len(sumas_columnas)]  # Repetir el valor de la suma de la columna i en la fila i de la matriz B
+    return B * C
