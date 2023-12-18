@@ -22,24 +22,15 @@ def sumaproducto(matriz1, matriz2):
 
 
 def productoEscalar2Matrices(A , B):
-    n_columnas = A.shape[1]
-    productos = []
-    for i in range(n_columnas):
-        columna_matriz_1 = A[:, i]
-        columna_matriz_2 = B[:, i]
-        producto_escalar = np.dot(columna_matriz_1, columna_matriz_2)
-        productos.append(producto_escalar)
+    productos = np.sum(A * B, axis=0)
     return productos
 
 def productoEscalar3Matrices(A , B, C):
-    n_columnas = A.shape[1]
-    productos = []
-    for i in range(n_columnas):
-        columna_matriz_1 = A[:, i]
-        columna_matriz_2 = B[:, i]
-        columna_matriz_3 = C[:, i]
-        producto_escalar = np.sum(columna_matriz_1 * columna_matriz_2 * columna_matriz_3)
-        productos.append(producto_escalar)
+    productos = np.sum(A * B * C, axis=0)
+    return productos
+
+def productoEscalar4Matrices(A , B, C,D):
+    productos = np.sum(A * B * C * D, axis=0)
     return productos
 
 def misma_cantidad_filas(matriz1, matriz2):
@@ -124,3 +115,13 @@ def generarNuevoBjK(A, C):
     for i in range(filas):
         B[i, :] = sumas_columnas[i % len(sumas_columnas)]  # Repetir el valor de la suma de la columna i en la fila i de la matriz B
     return B * C
+
+def calcular_termino_producto_escalar2(A, B, CC):
+    productos = productoEscalar2Matrices(A, B)
+    resultado_final = sum(productos)
+    return resultado_final * CC
+
+def calcular_termino_producto_escalar3(A, B, C, coeficiente):
+    productos = productoEscalar3Matrices(A, B, C)
+    resultado_final = sum(productos)
+    return resultado_final * coeficiente

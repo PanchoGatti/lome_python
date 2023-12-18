@@ -135,7 +135,9 @@ if hoja_Gen_Cap is not None:
     m = len(numeric_arrays[2])
     Cik = np.zeros((n,m))
     Cik = np.tile(numeric_arrays[0], (m,1))
-    
+        
+
+
 matrices_iteradas_Xij = matriz_iterada(Dij)
 matrices_iteradas_Zik = matriz_iterada(Dik)
 matrices_iteradas_Yjk = matriz_iterada(Djk)
