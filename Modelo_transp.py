@@ -1,3 +1,4 @@
+import openpyxl
 import pandas as pd
 import os
 import sys
@@ -494,13 +495,344 @@ else:
     print(tercer_termino_tercerexp)
     print(np.ceil(tercer_termino_tercerexp + segundo_termino_tercerexp + primer_termino_tercerexp))
 
-    final =  datetime.now() - hora_actual
-    print("tiempo total de ejecución en minutos: ", final.total_seconds()/60)
     
+    
+#################################################################################
+#Se borra la solapa "Resultados"
+# Nombre del archivo Excel
+# escenario = hoja_INPUTS_Generales['A2'].value
+archivo_federico = openpyxl.load_workbook('modelo.xlsm')
+# Seleccionar la hoja del archivo "Federico"
+hoja_federico = archivo_federico['INPUTS_Generales']
+# Obtener el valor de la celda A2 en el archivo "Federico"
+escenario = hoja_federico['A2'].value
+
+
+nombre_archivo = f"RESULTADOS_{escenario}.xlsx"
+# Cargar el archivo Excel existente (xlsm)
+# archivo_excel = openpyxl.load_workbook(nombre_archivo, keep_vba=True)
+# datos_excel
+nuevo_libro = openpyxl.Workbook()
+# nueva_hoja = nuevo_libro.active
+texto_a_imprimir = 'Distribución de Residuos de todo el sistema'
+nueva_hoja = nuevo_libro.create_sheet(title='Resultados')
+# Seleccionar la hoja en la que se imprimirá el texto
+# hoja = nueva_hoja['Resultados']
+# Escribir el texto en la celda A1
+nueva_hoja['A1'] = texto_a_imprimir
+
+  
+# Encontrar la última fila en la hoja
+ultima_fila = nueva_hoja.max_row     
+# Matriz de datos
+matriz_transpuesta=list(map(list, zip(*Aij)))
+
+datos_resultantes_A = (np.array(matriz_transpuesta) * np.array(matriz_optimaXij))
+    
+    
+# Convertir cada elemento de la matriz a texto
+datos_resultantes_A_texto = [
+    [str(elemento) for elemento in fila] for fila in datos_resultantes_A
+]
+
+# Encabezados para las filas (I1, I2, I3, ...)
+encabezados_filas = [f"I{i}" for i in range(1, len(datos_resultantes_A_texto) + 1)]
+
+# Encabezados para las columnas (J1, J2, J3, ...)
+encabezados_columnas = [f"J{j}" for j in range(1, len(datos_resultantes_A_texto[0]) + 1)]
+
+# Insertar encabezados de filas y columnas en la matriz de datos
+datos_con_encabezados = [
+    [None] + encabezados_columnas
+] + [
+    [encabezado_fila] + fila for encabezado_fila, fila in zip(encabezados_filas, datos_resultantes_A_texto)
+]
+
+# Obtener la suma de cada columna
+sumas_columnas = [sum(columna) for columna in zip(*datos_resultantes_A)]
+
+# Agregar la fila con las sumas al final de la matriz
+fila_suma = ['SUMA'] + sumas_columnas
+datos_con_encabezados.append(fila_suma)
+
+# Escribir la matriz con encabezados y suma en la hoja del Excel
+for fila, fila_datos in enumerate(datos_con_encabezados, start=1):
+    for columna, valor in enumerate(fila_datos, start=1):
+        nueva_hoja.cell(row=ultima_fila + 2 + fila, column=columna, value=str(valor))  # Convertir el valor a texto
+
+
+#Imprimo segunda matriz debajo de la anterior"
+# Encontrar la última fila en la hoja
+ultima_fila = nueva_hoja.max_row 
+
+# Matriz B
+datos_resultantes_b = Bjk
+
+    
+# Convertir cada elemento de la matriz a texto
+datos_resultantes_b_texto = [
+    [str(elemento) for elemento in fila] for fila in datos_resultantes_b
+]
+
+# Encabezados para las filas (I1, I2, I3, ...)
+encabezados_filas = [f"I{i}" for i in range(1, len(datos_resultantes_b_texto) + 1)]
+
+# Encabezados para las columnas (J1, J2, J3, ...)
+encabezados_columnas = [f"K{k}" for k in range(1, len(datos_resultantes_b_texto[0]) + 1)]
+
+# Insertar encabezados de filas y columnas en la matriz de datos
+datos_con_encabezados = [
+    [None] + encabezados_columnas
+] + [
+    [encabezado_fila] + fila for encabezado_fila, fila in zip(encabezados_filas, datos_resultantes_b_texto)
+]
+
+# Obtener la suma de cada columna
+sumas_columnas = [sum(columna) for columna in zip(*datos_resultantes_b)]
+
+# Agregar la fila con las sumas al final de la matriz
+fila_suma = ['SUMA'] + sumas_columnas
+datos_con_encabezados.append(fila_suma)
+
+# Escribir la matriz con encabezados y suma en la hoja del Excel
+for fila, fila_datos in enumerate(datos_con_encabezados, start=1):
+    for columna, valor in enumerate(fila_datos, start=1):
+        nueva_hoja.cell(row=ultima_fila + 2 + fila, column=columna, value=str(valor))  # Convertir el valor a texto
 
 
 
 
+
+# Encontrar la última fila en la hoja
+ultima_fila = nueva_hoja.max_row     
+# Matriz de datos
+matriz_transpuesta=list(map(list, zip(*Cik)))
+
+datos_resultantes_c = (np.array(matriz_transpuesta) * np.array(matriz_optimaZik))
+
+    
+# Convertir cada elemento de la matriz a texto
+datos_resultantes_c_texto = [
+    [str(elemento) for elemento in fila] for fila in datos_resultantes_c
+]
+
+# Encabezados para las filas (I1, I2, I3, ...)
+encabezados_filas = [f"I{i}" for i in range(1, len(datos_resultantes_c_texto) + 1)]
+
+# Encabezados para las columnas (J1, J2, J3, ...)
+encabezados_columnas = [f"K{k}" for k in range(1, len(datos_resultantes_c_texto[0]) + 1)]
+
+# Insertar encabezados de filas y columnas en la matriz de datos
+datos_con_encabezados = [
+    [None] + encabezados_columnas
+] + [
+    [encabezado_fila] + fila for encabezado_fila, fila in zip(encabezados_filas, datos_resultantes_c_texto)
+]
+
+# Obtener la suma de cada columna
+sumas_columnas = [sum(columna) for columna in zip(*datos_resultantes_c)]
+
+# Agregar la fila con las sumas al final de la matriz
+fila_suma = ['SUMA'] + sumas_columnas
+datos_con_encabezados.append(fila_suma)
+
+# Escribir la matriz con encabezados y suma en la hoja del Excel
+for fila, fila_datos in enumerate(datos_con_encabezados, start=1):
+    for columna, valor in enumerate(fila_datos, start=1):
+        nueva_hoja.cell(row=ultima_fila + 2 + fila, column=columna, value=str(valor))  # Convertir el valor a texto
+
+
+
+
+
+# Encontrar la última fila con texto en la hoja de Excel
+ultima_fila_con_texto = max((i for i, row in enumerate(nueva_hoja.iter_rows(), start=1) if any(cell.value for cell in row)), default=0)
+
+# Calcula la posición para escribir tu información (2 filas por debajo de la última con texto)
+ultima_fila = ultima_fila_con_texto + 2  # Dos filas de espacio
+
+# Texto a imprimir dos filas por debajo de la última fila con información
+texto_a_imprimir = 'Distribución de camiones en todo el sistema'
+
+# Escribir el texto en la celda A (columna 1) dos filas por debajo de la última fila con información
+nueva_hoja.cell(row=ultima_fila + 1, column=1, value=texto_a_imprimir)
+
+
+
+
+# Encontrar la última fila en la hoja
+ultima_fila = nueva_hoja.max_row     
+# Matriz de datos
+
+
+datos_resultantes_A = (np.array(NCij))*(np.array(matriz_optimaXij))
+    
+    
+# Convertir cada elemento de la matriz a texto
+datos_resultantes_A_texto = [
+    [str(elemento) for elemento in fila] for fila in datos_resultantes_A
+]
+
+# Encabezados para las filas (I1, I2, I3, ...)
+encabezados_filas = [f"I{i}" for i in range(1, len(datos_resultantes_A_texto) + 1)]
+
+# Encabezados para las columnas (J1, J2, J3, ...)
+encabezados_columnas = [f"J{j}" for j in range(1, len(datos_resultantes_A_texto[0]) + 1)]
+
+# Insertar encabezados de filas y columnas en la matriz de datos
+datos_con_encabezados = [
+    [None] + encabezados_columnas
+] + [
+    [encabezado_fila] + fila for encabezado_fila, fila in zip(encabezados_filas, datos_resultantes_A_texto)
+]
+
+# Obtener la suma de cada columna
+sumas_columnas = [sum(columna) for columna in zip(*datos_resultantes_A)]
+
+# Agregar la fila con las sumas al final de la matriz
+fila_suma = ['SUMA'] + sumas_columnas
+datos_con_encabezados.append(fila_suma)
+
+# Escribir la matriz con encabezados y suma en la hoja del Excel
+for fila, fila_datos in enumerate(datos_con_encabezados, start=1):
+    for columna, valor in enumerate(fila_datos, start=1):
+        nueva_hoja.cell(row=ultima_fila + 2 + fila, column=columna, value=str(valor))  # Convertir el valor a texto
+        
+        
+        
+# Encontrar la última fila en la hoja
+ultima_fila = nueva_hoja.max_row     
+# Matriz de datos
+
+
+datos_resultantes_A = (np.array(NTjk))*(np.array(matriz_optimaYjk))
+    
+    
+# Convertir cada elemento de la matriz a texto
+datos_resultantes_A_texto = [
+    [str(elemento) for elemento in fila] for fila in datos_resultantes_A
+]
+
+# Encabezados para las filas (I1, I2, I3, ...)
+encabezados_filas = [f"J{j}" for j in range(1, len(datos_resultantes_A_texto) + 1)]
+
+# Encabezados para las columnas (J1, J2, J3, ...)
+encabezados_columnas = [f"K{k}" for k in range(1, len(datos_resultantes_A_texto[0]) + 1)]
+
+# Insertar encabezados de filas y columnas en la matriz de datos
+datos_con_encabezados = [
+    [None] + encabezados_columnas
+] + [
+    [encabezado_fila] + fila for encabezado_fila, fila in zip(encabezados_filas, datos_resultantes_A_texto)
+]
+
+# Obtener la suma de cada columna
+sumas_columnas = [sum(columna) for columna in zip(*datos_resultantes_A)]
+
+# Agregar la fila con las sumas al final de la matriz
+fila_suma = ['SUMA'] + sumas_columnas
+datos_con_encabezados.append(fila_suma)
+
+# Escribir la matriz con encabezados y suma en la hoja del Excel
+for fila, fila_datos in enumerate(datos_con_encabezados, start=1):
+    for columna, valor in enumerate(fila_datos, start=1):
+        nueva_hoja.cell(row=ultima_fila + 2 + fila, column=columna, value=str(valor))  # Convertir el valor a texto    
+        
+        
+        
+ # Encontrar la última fila en la hoja
+ultima_fila = nueva_hoja.max_row     
+# Matriz de datos
+
+
+datos_resultantes_A = (np.array(NCik))*(np.array(matriz_optimaZik))
+    
+    
+# Convertir cada elemento de la matriz a texto
+datos_resultantes_A_texto = [
+    [str(elemento) for elemento in fila] for fila in datos_resultantes_A
+]
+
+# Encabezados para las filas (I1, I2, I3, ...)
+encabezados_filas = [f"I{i}" for i in range(1, len(datos_resultantes_A_texto) + 1)]
+
+# Encabezados para las columnas (J1, J2, J3, ...)
+encabezados_columnas = [f"K{k}" for k in range(1, len(datos_resultantes_A_texto[0]) + 1)]
+
+# Insertar encabezados de filas y columnas en la matriz de datos
+datos_con_encabezados = [
+    [None] + encabezados_columnas
+] + [
+    [encabezado_fila] + fila for encabezado_fila, fila in zip(encabezados_filas, datos_resultantes_A_texto)
+]
+
+# Obtener la suma de cada columna
+sumas_columnas = [sum(columna) for columna in zip(*datos_resultantes_A)]
+
+# Agregar la fila con las sumas al final de la matriz
+fila_suma = ['SUMA'] + sumas_columnas
+datos_con_encabezados.append(fila_suma)
+
+# Escribir la matriz con encabezados y suma en la hoja del Excel
+for fila, fila_datos in enumerate(datos_con_encabezados, start=1):
+    for columna, valor in enumerate(fila_datos, start=1):
+        nueva_hoja.cell(row=ultima_fila + 2 + fila, column=columna, value=str(valor))  # Convertir el valor a texto    
+        
+        
+
+# Encontrar la última fila con texto en la hoja de Excel
+ultima_fila_con_texto = max((i for i, row in enumerate(nueva_hoja.iter_rows(), start=1) if any(cell.value for cell in row)), default=0)
+# Calcula la posición para escribir tu información (2 filas por debajo de la última con texto)
+ultima_fila = ultima_fila_con_texto + 2  # Dos filas de espacio
+# Texto a imprimir dos filas por debajo de la última fila con información
+texto_a_imprimir = 'Distribución de Gases de Efecto Invernadero en todo el sistema'
+# Escribir el texto en la celda A (columna 1) dos filas por debajo de la última fila con información
+nueva_hoja.cell(row=ultima_fila + 1, column=1, value=texto_a_imprimir)
+
+
+# Encontrar la última fila con texto en la hoja de Excel
+ultima_fila_con_texto = max((i for i, row in enumerate(nueva_hoja.iter_rows(), start=1) if any(cell.value for cell in row)), default=0)
+# Calcula la posición para escribir tu información (2 filas por debajo de la última con texto)
+ultima_fila = ultima_fila_con_texto + 2  # Dos filas de espacio
+# Formatear la tupla como una cadena legible
+texto_formateado = f"Cantidad de GEI en kg de CO2 Equivalente para el subsistema I-J: {np.ceil(primer_termino_tercerexp)}"
+# Escribir el texto formateado en la celda A (columna 1) dos filas por debajo de la última fila con información
+nueva_hoja.cell(row=ultima_fila + 1, column=1, value=str(texto_formateado))
+
+# Encontrar la última fila con texto en la hoja de Excel
+ultima_fila_con_texto = max((i for i, row in enumerate(nueva_hoja.iter_rows(), start=1) if any(cell.value for cell in row)), default=0)
+# Calcula la posición para escribir tu información (2 filas por debajo de la última con texto)
+ultima_fila = ultima_fila_con_texto + 1  # Dos filas de espacio
+# Formatear la tupla como una cadena legible
+texto_formateado = f"Cantidad de GEI en kg de CO2 Equivalente para el subsistema J-K: {np.ceil(segundo_termino_tercerexp)}"
+# Escribir el texto formateado en la celda A (columna 1) dos filas por debajo de la última fila con información
+nueva_hoja.cell(row=ultima_fila + 1, column=1, value=str(texto_formateado))
+
+# Encontrar la última fila con texto en la hoja de Excel
+ultima_fila_con_texto = max((i for i, row in enumerate(nueva_hoja.iter_rows(), start=1) if any(cell.value for cell in row)), default=0)
+# Calcula la posición para escribir tu información (2 filas por debajo de la última con texto)
+ultima_fila = ultima_fila_con_texto + 1  # Dos filas de espacio
+# Formatear la tupla como una cadena legible
+texto_formateado = f"Cantidad de GEI en kg de CO2 Equivalente para el subsistema I-K: {np.ceil(tercer_termino_tercerexp)}"
+# Escribir el texto formateado en la celda A (columna 1) dos filas por debajo de la última fila con información
+nueva_hoja.cell(row=ultima_fila + 1, column=1, value=str(texto_formateado))  
+
+# Encontrar la última fila con texto en la hoja de Excel
+ultima_fila_con_texto = max((i for i, row in enumerate(nueva_hoja.iter_rows(), start=1) if any(cell.value for cell in row)), default=0)
+# Calcula la posición para escribir tu información (2 filas por debajo de la última con texto)
+ultima_fila = ultima_fila_con_texto + 1  # Dos filas de espacio
+# Formatear la tupla como una cadena legible
+texto_formateado = f"Cantidad de GEI en kg de CO2 Equivalente para todo el sistema: {np.ceil(primer_termino_tercerexp+segundo_termino_tercerexp+tercer_termino_tercerexp)}"
+# Escribir el texto formateado en la celda A (columna 1) dos filas por debajo de la última fila con información
+nueva_hoja.cell(row=ultima_fila + 1, column=1, value=str(texto_formateado))
+        
+
+# Guardar los cambios en el archivo Excel (xlsm)
+nuevo_libro.save(nombre_archivo)
+
+
+final =  datetime.now() - hora_actual
+print("tiempo total de ejecución en minutos: ", final.total_seconds()/60)
 
 
 
