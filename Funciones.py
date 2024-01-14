@@ -2,10 +2,10 @@ import numpy as np
 
 # Matriz de ejemplo
 matriz = np.array([
-    [12, 0, 1, 0],
-    [4, 0, 0, 0],
-    [7, 1, 0, 1],
-    [0, 0, 0, 0]
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9],
+    [0, 0, 0]
 ])
 
 # Suma de cada columna
@@ -17,3 +17,5 @@ promedio_no_cero = np.mean(valores_no_cero)
 
 print("Sumas por columna:", sumas_columnas)
 print("Promedio de sumas excluyendo ceros:", promedio_no_cero)
+
+
