@@ -125,3 +125,18 @@ def calcular_termino_producto_escalar3(A, B, C, coeficiente):
     productos = productoEscalar3Matrices(A, B, C)
     resultado_final = sum(productos)
     return resultado_final * coeficiente
+
+def funcion_ci_ca(x):
+    return 34545*x+9*(10**6)
+    
+def funcion_co_ca(x):
+    return 2012.4*(x**(-0.865))
+
+def funcion_ci_et(x,quiebre_et1y2):
+    if x < quiebre_et1y2:
+        return (0.034*x + 5*(10**(-8)))*1000000
+    else:
+        return (0.0101*x + 2.5749)*1000000
+    
+def funcion_co_et(x):
+    return 691.43*(x**(-0.83))
