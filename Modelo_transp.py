@@ -187,17 +187,12 @@ for indice_x in range(n_iter -1):
     matriz_et = (np.array(matriz_transpuesta) * np.array(matriz_optimaXij))
     print ("MATRIZ ET", matriz_et)
     # Suma de cada columna
-    if ((matriz_et != matriz_et_en_cero).all()):
-        sumas_columnas_et = [sum(col) for col in zip(*matriz_et)]
-    else:
-        sumas_columnas_et = np.array([0, 0, 0, 0])
-    
+    sumas_columnas_et = [sum(col) for col in zip(*matriz_et)]
     sumas_no_nulas = [suma for suma in sumas_columnas_et if suma != 0]
-
-	# Calcula el promedio de las sumas no nulas
+    # Calcula el promedio de las sumas no nulas
     promedio_et = sum(sumas_no_nulas) / len(sumas_no_nulas) if sumas_no_nulas else 1  
-	
-    print ("sumas_columnas", sumas_columnas_et)
+    
+    print ("sumas_columnas_et", sumas_columnas_et)
     # Nombre del archivo Excel
     # escenario = hoja_INPUTS_Generales['A2'].value
     archivo_federico = openpyxl.load_workbook('modelo.xlsm')
@@ -207,7 +202,7 @@ for indice_x in range(n_iter -1):
     #vida_util_et = hoja_federico['G26'].value
     print ("VIDA UTIL ET", vida_util_et)
 
-   
+
         
     # Sumar todos los elementos del array
     generacion_total_anual = promedio_et*365
@@ -243,10 +238,10 @@ for indice_x in range(n_iter -1):
     sumas_columnas_ca = [sum(col) for col in zip(*matriz_ca)]
     sumas_no_nulas = [suma for suma in sumas_columnas_ca if suma != 0]
 
-	# Calcula el promedio de las sumas no nulas
+    # Calcula el promedio de las sumas no nulas
     promedio_ca = sum(sumas_no_nulas) / len(sumas_no_nulas) if sumas_no_nulas else 0  
-   
-   
+
+
     
     depositado_total_anual = promedio_ca*365
     ci_1ano_ca= (funcion_ci_ca(promedio_ca))/vida_util_ca
@@ -277,7 +272,11 @@ for indice_x in range(n_iter -1):
         OPLk = funcion_co_ca(promedio_ca)
         INVTSj = ci_1ano_en_t_d
         OPTSj = funcion_co_et(promedio_et)
-        for Xij in matrices_iteradas_Xij:
+        print('INVLk',INVLk)
+        print('OPLk',OPLk)
+        print('INVTSj',INVTSj)
+        print('OPTSj',OPTSj)
+    for Xij in matrices_iteradas_Xij:
             for Zik in matrices_iteradas_Zik:
                 for Yjk in matrices_iteradas_Yjk:
                     if(evaluarPrimeraRestriccion(np.array(Xij),np.array(Zik))):
@@ -417,7 +416,7 @@ for indice_x in range(n_iter -1):
                                     A = np.array(Xij)
                                     B = np.array(list(map(list, zip(*Aij))))
 
-                                    decimo_termino = calcular_termino_producto_escalar2(A,B,(RECj * SPj*PS_en_ET))
+                                    decimo_termino = calcular_termino_producto_escalar2(A,B,(RECj * SPj * PS_en_ET))
                                     
                                     ###############################HASTA ACÁ decimo TÉRMINO######################
                                     
@@ -426,7 +425,7 @@ for indice_x in range(n_iter -1):
                                     B = np.array(list(map(list, zip(*Cik))))
 
                                     
-                                    decimoprimer_termino = calcular_termino_producto_escalar2(A,B,(RECk * SPk* PS_en_CA))
+                                    decimoprimer_termino = calcular_termino_producto_escalar2(A,B,(RECk * SPk * PS_en_CA))
                                     ###############################HASTA ACÁ decimo TÉRMINO######################
                                     sumatotal = (primer_termino + segundo_termino + tercer_termino + cuarto_termino + quinto_termino  + sexto_termino + septimo_termino + octavo_termino + noveno_termino - decimo_termino - decimoprimer_termino)
                                     if(sumatotal < valor_suma_minimo):
@@ -726,7 +725,7 @@ datos_resultantes_b_texto = [
 ]
 
 # Encabezados para las filas (I1, I2, I3, ...)
-encabezados_filas = [f"I{i}" for i in range(1, len(datos_resultantes_b_texto) + 1)]
+encabezados_filas = [f"J{i}" for i in range(1, len(datos_resultantes_b_texto) + 1)]
 
 # Encabezados para las columnas (J1, J2, J3, ...)
 encabezados_columnas = [f"K{k}" for k in range(1, len(datos_resultantes_b_texto[0]) + 1)]
