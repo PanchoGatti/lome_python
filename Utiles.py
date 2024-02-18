@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 def generar_matriz(arr):
     matriz = [[1 if num == 0 else 0] for num in arr]
@@ -126,17 +127,75 @@ def calcular_termino_producto_escalar3(A, B, C, coeficiente):
     resultado_final = sum(productos)
     return resultado_final * coeficiente
 
-def funcion_ci_ca(x):
-    return 34545*x+9*(10**6)
-    
-def funcion_co_ca(x):
-    return 2012.4*(x**(-0.865))
-
-def funcion_ci_et(x,quiebre_et1y2):
-    if x < quiebre_et1y2:
-        return (0.034*x + 5*(10**(-8)))*1000000
+def funcion_ci_ca(x, vida_util_ca):
+    if x <= 15:
+        return (23.22*(x**-0.608))*365*vida_util_ca
     else:
-        return (0.0101*x + 2.5749)*1000000
+        if x <= 350:
+            return ((27.008*(x**-0.2))+(43.746*(x**-0.663))+(1.1644*(x**-1)))*365*vida_util_ca
+        else:
+            return ((27.008*(x**-0.2))+(43.746*(x**-0.663))+(184.25*(x**-1)))*365*vida_util_ca
+        
+       
+
+            
+def funcion_co_ca(x):
+    if x <= 15:
+        return (42.663*(x**-0.362))*365
+    else:
+        return (771.97*(x**-0.837))*365
     
-def funcion_co_et(x):
-    return 691.43*(x**(-0.83))
+
+    
+   
+        
+def funcion_ci_et(x,condicion_PS_ET, vida_util_et, sep_origen):
+    if condicion_PS_ET == "NO":
+        if x <= 15:
+            return (136.99*(x**-1.004))*365*vida_util_et
+        elif x > 15 and x <=100:
+            return (277.49*(x**-0.96))*365*vida_util_et
+        elif x > 100 and x <=500:
+            return (284.68*(x**-0.954))*365*vida_util_et
+        else:
+            return (284.01*(x**-0.916))*365*vida_util_et
+    else:
+        if x <= 7:
+            return ((136.99*(x**-1.004)) + (26.523*((sep_origen*x)**-1))*(sep_origen))*vida_util_et*365
+        elif x > 7 and x <= 15:
+            return ((136.99*(x**-1.004)) + (20.583*((sep_origen*x)**-0.464))*365*(sep_origen))*vida_util_et*365
+        elif x > 15 and x <=100:
+            return ((277.49*(x**-0.96)) + (20.583*((sep_origen*x)**-0.464))*365*(sep_origen))*vida_util_et*365
+        elif x > 100 and x <=500:
+            return ((284.84*(x**-0.954)) + (20.583*((sep_origen*x)**-0.464))*365*(sep_origen))*vida_util_et*365
+        else:
+            return ((284.01*(x**-0.916)) + (20.583*((sep_origen*x)**-0.464))*365*(sep_origen))*vida_util_et*365
+        
+
+     
+def funcion_co_et(x,condicion_PS_ET, sep_origen):
+    if condicion_PS_ET == "NO":
+        if x <= 100:
+            return (361.45*(x**-0.767))*365
+        elif x > 100 and x <=500:
+            return (665.04*(x**-0.874))*365
+        else:
+            return (582.95*(x**-0.831))*365
+    else:
+        if x <= 7:
+            return ((361.45*(x**-0.767)) + (38.589*((sep_origen*x)**-1)))*365
+        elif x > 7 and x <= 28:
+            return ((361.45*(x**-0.767)) + (58.87))*365
+        elif x > 28 and x <=100:
+            return ((361.45*(x**-0.767)) + (1221.5*((sep_origen*x)**-0.923)))*365
+        elif x > 100 and x <=500:
+            return ((655.04*(x**-0.874)) + (1221.5*((sep_origen*x)**-0.923)))*365
+        else:
+            return ((582.95*(x**-0.831)) + (1221.5*((sep_origen*x)**-0.923)))*365
+        
+
+    
+    
+
+       
+  

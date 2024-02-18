@@ -6,6 +6,10 @@ import numpy as np
 from openpyxl import load_workbook
 from Datos_ETs_CAs import datos_ets_cas
 from Datos_Loc_CAs import datos_loc_cas
+from openpyxl.styles import Alignment, Font, PatternFill, Border, Side
+from openpyxl.utils import get_column_letter
+
+
 
 from Datos_Loc_ETs import datos_loc_ets
 from Utiles import calcular_termino_producto_escalar2, calcular_termino_producto_escalar3, evaluarCuartaRestriccion, evaluarPrimeraRestriccion, evaluarSegundaRestriccion, evaluarTerceraRestriccion, funcion_ci_ca, funcion_ci_et, funcion_co_ca, funcion_co_et, generar_matriz, generar_matriz_nueva, generarNuevoBjK, productoEscalar2Matrices, productoEscalar3Matrices, productoEscalar4Matrices
@@ -65,15 +69,24 @@ KPLt = 0 # distancia recorrida en un litro de camiones transportadores km/l
 n_iter = 0 #Numero de iteraciones máximas a realizar por el modelo
 rango_et = 0 #% de Generación como rango de ET
 rango_ca = 0 #% de Generación como rango de CA
-quiebre_et1y2 = 0 # Punto de quiebre entre ET de 1 piso y ET de 2 pisos
+promedio_gen_inicial = 0 # Punto de quiebre entre ET de 1 piso y ET de 2 pisos
 vida_util_et = 0 #Vida util ET
 vida_util_ca = 0 #Vida util CA
+tasainteres = 0 #Tasa de interes anual
+texto_region = 0
+texto_i1 = 0
+texto_i2 = 0
+texto_i3 = 0
+texto_i4 = 0
+texto_i5 = 0
+texto_i10 = 0
+texto_i7 = 0
 hoja_INPUTS_Generales = datos_excel.get('INPUTS_Generales')
 hoja_Datos_Loc_ETs = datos_excel.get('Datos_Loc_ETs')
 hoja_Datos_Loc_CAs = datos_excel.get('Datos_Loc_CAs')
 hoja_Datos_ETs_CAs = datos_excel.get('Datos_ETs_CAs')
 hoja_Gen_Cap = datos_excel.get('Gen-Cap')
-matriz_et_en_cero = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+
 
 if hoja_INPUTS_Generales is not None:
     INVTSj = hoja_INPUTS_Generales.iloc[20, 6]
@@ -114,9 +127,18 @@ if hoja_INPUTS_Generales is not None:
     n_iter = hoja_INPUTS_Generales.iloc[37,6]
     rango_et = hoja_INPUTS_Generales.iloc[38,6]
     rango_ca = hoja_INPUTS_Generales.iloc[39,6]
-    quiebre_et1y2 = hoja_INPUTS_Generales.iloc[40,6]
+    promedio_gen_inicial = hoja_INPUTS_Generales.iloc[40,6]
     vida_util_et = hoja_INPUTS_Generales.iloc[24, 6]
     vida_util_ca = hoja_INPUTS_Generales.iloc[29, 6]
+    tasainteres = hoja_INPUTS_Generales.iloc[41, 6]
+    texto_region = hoja_INPUTS_Generales.iloc[31, 10]
+    texto_i1 = hoja_INPUTS_Generales.iloc[33, 10] 
+    texto_i2 = hoja_INPUTS_Generales.iloc[34, 10]
+    texto_i3 = hoja_INPUTS_Generales.iloc[35, 10]
+    texto_i4 = hoja_INPUTS_Generales.iloc[36, 10]
+    texto_i5 = hoja_INPUTS_Generales.iloc[37, 10]
+    texto_i6 = hoja_INPUTS_Generales.iloc[38, 10]
+    texto_i7 = hoja_INPUTS_Generales.iloc[39, 10]
     
 
 if hoja_Datos_Loc_ETs is not None:
@@ -159,101 +181,65 @@ if hoja_Gen_Cap is not None:
     Cik = np.zeros((n,m))
     Cik = np.tile(numeric_arrays[0], (m,1))
     
-matrices_iteradas_Xij = matriz_iterada(Dij)
-matrices_iteradas_Zik = matriz_iterada(Dik)
-matrices_iteradas_Yjk = matriz_iterada(Djk)
-matriz_optimaXij = Dij
-matriz_optimaZik = Dik
-matriz_optimaYjk = Djk
+n = len(Dij)
+m = n
+matrices_iteradas_Xij = matriz_iterada(n, m)
+n = len(Dik)
+m = n
+matrices_iteradas_Zik = matriz_iterada(n, m)
+n = len(Djk)
+m = n
+matrices_iteradas_Yjk = matriz_iterada(n, m)
+
+
+filas, columnas = Dij.shape
+matriz_optimaXij = np.ones((filas, columnas))
+filas, columnas = Dik.shape
+matriz_optimaZik = np.ones((filas, columnas))
+filas, columnas = Djk.shape
+matriz_optimaYjk = np.ones((filas, columnas))
+
+
 vector_termino_primero=[]
 valor_suma_minimo=999999999999999999999999999
 hora_actual = datetime.now()
 print("La hora actual es:", hora_actual)
 
-cantidad_de_et=len(numeric_arrays[0])
-
-
-cantidad_de_ca=len(numeric_arrays[2])
 
 ######################################Prueba de cambio de valor#########################
+valor_inicial_de_corrida_et = promedio_gen_inicial
 
+arreglo_terminos_optimos = []
 
-######################################Prueba de cambio de valor#########################
-valor_inicial_de_corrida_et = sum(numeric_arrays[0])/cantidad_de_et
-valor_inicial_de_corrida_ca = sum(numeric_arrays[0])/cantidad_de_ca
 for indice_x in range(n_iter -1):
 
     matriz_transpuesta = list(map(list, zip(*Aij)))
     matriz_et = (np.array(matriz_transpuesta) * np.array(matriz_optimaXij))
-    print ("MATRIZ ET", matriz_et)
     # Suma de cada columna
     sumas_columnas_et = [sum(col) for col in zip(*matriz_et)]
     sumas_no_nulas = [suma for suma in sumas_columnas_et if suma != 0]
     # Calcula el promedio de las sumas no nulas
-    promedio_et = sum(sumas_no_nulas) / len(sumas_no_nulas) if sumas_no_nulas else 1  
+    promedio_et = sum(sumas_no_nulas) / len(sumas_no_nulas) if sumas_no_nulas else 0
     
-    print ("sumas_columnas_et", sumas_columnas_et)
+   
     # Nombre del archivo Excel
     # escenario = hoja_INPUTS_Generales['A2'].value
     archivo_federico = openpyxl.load_workbook('modelo.xlsm')
     # Seleccionar la hoja del archivo "Federico"
     hoja_federico = archivo_federico['INPUTS_Generales']
-    # Obtener el valor de la celda A2 en el archivo "Federico"
-    #vida_util_et = hoja_federico['G26'].value
-    print ("VIDA UTIL ET", vida_util_et)
-
-
-        
-    # Sumar todos los elementos del array
-    generacion_total_anual = promedio_et*365
-
-    ci_1ano= (funcion_ci_et(promedio_et,quiebre_et1y2))/vida_util_et
-
-    if (generacion_total_anual == 0 ):
-        ci_1ano_en_t_d = 1 
-    else:
-        ci_1ano_en_t_d= ci_1ano/generacion_total_anual
-        
-
-    matriz_transpuesta_cik = list(map(list, zip(*Cik)))
-    v=(np.array(matriz_optimaZik) * np.array(matriz_transpuesta_cik))
-    
-    matriz_transpuesta_ppp = list(map(list, zip(*Aij)))
-    A = np.array(matriz_optimaXij)
-    B = np.array(matriz_transpuesta_ppp)
-    productos = productoEscalar2Matrices(A,B)
-    vector_resultante = np.array(productos)
-    vector_termino_primero = vector_resultante
-    Bjk = (np.tile(vector_resultante, (cantidad_de_ks, 1)).T) * (1- RECj)
-    C = np.array(matriz_optimaYjk)
-    D = np.array(Bjk)
-    y = C*D
-    
-    matriz_ca = (np.array(v) + np.array(y))
-    print ("MATRIZ CA", matriz_ca)
-    # Suma de cada columna
-    
-
-    # Calcular el promedio de las sumas excluyendo los valores iguales a cero
-    sumas_columnas_ca = [sum(col) for col in zip(*matriz_ca)]
-    sumas_no_nulas = [suma for suma in sumas_columnas_ca if suma != 0]
-
-    # Calcula el promedio de las sumas no nulas
-    promedio_ca = sum(sumas_no_nulas) / len(sumas_no_nulas) if sumas_no_nulas else 0  
-
-
-    
-    depositado_total_anual = promedio_ca*365
-    ci_1ano_ca= (funcion_ci_ca(promedio_ca))/vida_util_ca
-    ci_1ano_en_t_d_ca= ci_1ano_ca/depositado_total_anual
-    
-    
-    PS_en_ET = 1
-    PS_en_CA = 1
-    
+ 
     condicion_PS_ET = hoja_federico['K24'].value
+    sep_origen = (hoja_federico['K25'].value)/100
     condicion_PS_CA = hoja_federico['K29'].value
+
     
+       
+    FVP_et = (((1+tasainteres)**vida_util_et)-1)/(tasainteres*((1+tasainteres)**vida_util_et))
+    FVP_ca = (((1+tasainteres)**vida_util_ca)-1)/(tasainteres*((1+tasainteres)**vida_util_ca))
+    
+       
+  
+         
     if condicion_PS_ET == "SI":
         PS_en_ET = 1
     else:
@@ -263,22 +249,57 @@ for indice_x in range(n_iter -1):
         PS_en_CA = 1
     else:
         PS_en_CA = 0
+       
+
+    matriz_transpuesta_cik = list(map(list, zip(*Cik)))
+    v=(np.array(matriz_optimaZik) * np.array(matriz_transpuesta_cik))
+    
+   
+    
+    matriz_transpuesta_ppp = list(map(list, zip(*Aij)))
+    A = np.array(matriz_optimaXij)
+    B = np.array(matriz_transpuesta_ppp)
+    productos = productoEscalar2Matrices(A,B)
+    vector_resultante = np.array(productos)
+    vector_termino_primero = vector_resultante
+    Bjk = (np.tile(vector_resultante, (cantidad_de_ks, 1)).T) * (1- RECj*PS_en_ET)
+    C = np.array(matriz_optimaYjk)
+    D = np.array(Bjk)
+    y = C*D
+     
+   
+    matriz_ca = (np.array(v) + np.array(y))
 
 
-    if (valor_inicial_de_corrida_et>promedio_et*(1+rango_et/100) or valor_inicial_de_corrida_et<promedio_et*(1-rango_et/100) or valor_inicial_de_corrida_ca>promedio_ca*(1+rango_ca/100) or valor_inicial_de_corrida_ca<promedio_ca*(1-rango_ca/100)):
+    # Calcular el promedio de las sumas excluyendo los valores iguales a cero
+    sumas_columnas_ca = [sum(col) for col in zip(*matriz_ca)]
+    sumas_no_nulas = [suma for suma in sumas_columnas_ca if suma != 0]
+    # Calcula el promedio de las sumas no nulas
+    promedio_ca = sum(sumas_no_nulas) / len(sumas_no_nulas) if sumas_no_nulas else 0
+      
+
+    if (valor_inicial_de_corrida_et>promedio_et*(1+rango_et/100) or valor_inicial_de_corrida_et<promedio_et*(1-rango_et/100)):
         valor_inicial_de_corrida_et = promedio_et
-        valor_inicial_de_corrida_ca = promedio_ca
-        INVLk = ci_1ano_en_t_d_ca
-        OPLk = funcion_co_ca(promedio_ca)
-        INVTSj = ci_1ano_en_t_d
-        OPTSj = funcion_co_et(promedio_et)
-        print('INVLk',INVLk)
-        print('OPLk',OPLk)
-        print('INVTSj',INVTSj)
-        print('OPTSj',OPTSj)
+        
+        if promedio_ca == 0:
+            INVLk = 0
+            OPLk = 0
+        else:
+            INVLk = (funcion_ci_ca(promedio_ca, vida_util_ca))/FVP_ca
+            OPLk = funcion_co_ca(promedio_ca)
+                     
+        if promedio_et == 0:
+            INVTSj = 0
+            OPTSj = 0
+        else:
+            INVTSj = (funcion_ci_et(promedio_et,condicion_PS_ET, vida_util_et, sep_origen))/FVP_et
+            OPTSj = funcion_co_et(promedio_et, condicion_PS_ET, sep_origen)
+        
     for Xij in matrices_iteradas_Xij:
             for Zik in matrices_iteradas_Zik:
                 for Yjk in matrices_iteradas_Yjk:
+                    print ("XIJJJJJJJJJJJJJ", np.array(Xij))
+                    print ("Zikkkkkkkkkkkkk", np.array(Zik))
                     if(evaluarPrimeraRestriccion(np.array(Xij),np.array(Zik))):
                         if(evaluarSegundaRestriccion (Xij,Yjk)):
                             matriz_transpuesta = list(map(list, zip(*Aij)))
@@ -299,11 +320,13 @@ for indice_x in range(n_iter -1):
                                 vector_termino_primero = vector_resultante
                                 resultado_multiplicacion = np.dot(vector_resultante, C)
                                 primer_termino = resultado_multiplicacion*INVTSj
+                                
                                 #####HASTA ACÁ LLEGA EL PRIMER TÉRMINO, ARRANCA EL SEGUNDO. SE TOMAN VARIAS VARIABLES YA DEFINIDAS###
 
                                 segundo_termino = sum(productos) * OPTSj
+                                
                                 #HASTA ACÁ LLEGA EL SEGUNDO TÉRMINO, ARRANCA EL TERCERO. SE TOMAN VARIAS VARIABLES YA DEFINIDAS###
-                                Bjk = (np.tile(vector_resultante, (cantidad_de_ks, 1)).T) * (1- RECj)
+                                Bjk = (np.tile(vector_resultante, (cantidad_de_ks, 1)).T) * (1- RECj*PS_en_ET)
                                 matriz_transpuesta_cik = list(map(list, zip(*Cik)))
                                 D = ((np.array(Yjk) * np.array(Bjk)) +  (np.array(Zik) * np.array(matriz_transpuesta_cik)))
                                 E = generar_matriz_nueva(numeric_arrays[2])
@@ -322,6 +345,7 @@ for indice_x in range(n_iter -1):
                                     vector_resultante = np.array(productos)
                                     resultado_multiplicacion = np.dot(vector_resultante, C)
                                     tercer_termino = resultado_multiplicacion*INVLk
+                                    
                                     ######HASTA ACA TERCER TERMINO############
 
                                     matriz_transpuesta = list(map(list, zip(*Cik)))
@@ -340,6 +364,9 @@ for indice_x in range(n_iter -1):
                                     vector_resultante = np.array(productos)
                                     resultado_multiplicacion = np.dot(vector_resultante, C)
                                     cuarto_termino = resultado_multiplicacion*INVLk
+                                    
+                                                       
+                                    
 
                                     #################################HASTA ACÁ CUARTO TÉRMINO#############################
 
@@ -426,10 +453,11 @@ for indice_x in range(n_iter -1):
 
                                     
                                     decimoprimer_termino = calcular_termino_producto_escalar2(A,B,(RECk * SPk * PS_en_CA))
-                                    ###############################HASTA ACÁ decimo TÉRMINO######################
+                                    ###############################HASTA ACÁ decimoprimer TÉRMINO######################
                                     sumatotal = (primer_termino + segundo_termino + tercer_termino + cuarto_termino + quinto_termino  + sexto_termino + septimo_termino + octavo_termino + noveno_termino - decimo_termino - decimoprimer_termino)
                                     if(sumatotal < valor_suma_minimo):
                                         valor_suma_minimo = sumatotal
+                                        arreglo_terminos_optimos = [primer_termino[0], segundo_termino, tercer_termino[0], cuarto_termino[0], quinto_termino, sexto_termino, septimo_termino, octavo_termino, noveno_termino, decimo_termino, decimoprimer_termino]
                                         matriz_optimaXij = Xij
                                         matriz_optimaZik = Zik
                                         matriz_optimaYjk = Yjk
@@ -438,6 +466,8 @@ print("Optima Xij", matriz_optimaXij)
 print("Optima Zik", matriz_optimaZik)
 print("Optima Yjk", matriz_optimaYjk)
 print("suma valor minimo" ,valor_suma_minimo)
+
+
 
 ############################################################################################################
 
@@ -459,7 +489,7 @@ matriz_transpuesta = list(map(list, zip(*Aij)))
 
 A = np.array(matriz_transpuesta)
 TRcij = np.array(TRcij)
-B = np.floor(TRcij)
+B = np.round(TRcij)
 TRcij = B
 NCij = A / (Qwc*B)
 A_sin_inf = np.nan_to_num(np.array(NCij), nan=0, posinf=0, neginf=0)
@@ -489,11 +519,11 @@ print("Resultado del primer termino segunda expresión:", primer_termino_segunda
 Qwt = Vt*Et*Dt / (1+Rt)
 TRtjk= (T1t-(T2t+T3t))/((2*Djk/SPDt)+T4t+T5t)
 
-Bjk = generarNuevoBjK((np.array(matriz_optimaXij) * np.array(matriz_transpuesta)) * (1 - RECj),matriz_optimaYjk)
+Bjk = generarNuevoBjK((np.array(matriz_optimaXij) * np.array(matriz_transpuesta)) * (1 - RECj*PS_en_ET),matriz_optimaYjk)
 A = np.array(Bjk)
 TRtjk = np.array(TRtjk)
 # Redondear los valores de la matriz A hacia arriba al número entero más cercano
-B = np.floor(TRtjk)
+B = np.ceil(TRtjk)
 TRtjk=B
 
 NTjk = A / (Qwt*B)
@@ -522,8 +552,12 @@ matriz_transpuesta = list(map(list, zip(*Cik)))
 A = np.array(matriz_transpuesta)
 TRcik = np.array(TRcik)
 
-B = np.floor(TRcik)
+
+B = np.ceil(TRcik)
 TRcik = B
+
+
+
 NCik = A / (Qwc*B)
 A_sin_inf = np.nan_to_num(np.array(NCik), nan=0, posinf=0, neginf=0)
 NCik = A_sin_inf
@@ -660,18 +694,135 @@ escenario = hoja_federico['A2'].value
 
 nombre_archivo = f"RESULTADOS_{escenario}.xlsx"
 # Cargar el archivo Excel existente (xlsm)
-# archivo_excel = openpyxl.load_workbook(nombre_archivo, keep_vba=True)
+
 # datos_excel
 nuevo_libro = openpyxl.Workbook()
-# nueva_hoja = nuevo_libro.active
-texto_a_imprimir = 'Distribución de Residuos de todo el sistema'
-nueva_hoja = nuevo_libro.create_sheet(title='Resultados')
-# Seleccionar la hoja en la que se imprimirá el texto
-# hoja = nueva_hoja['Resultados']
-# Escribir el texto en la celda A1
-nueva_hoja['A1'] = texto_a_imprimir
 
-  
+
+# Seleccionar la hoja en la que se imprimirá el texto
+nueva_hoja = nuevo_libro.create_sheet(title='Resultados')
+
+column_widths = {
+    'A': 45,
+    'B': 15,
+    'C': 45,
+    'D': 15,
+    'E': 45,
+    'F': 15,
+}
+
+for column, width in column_widths.items():
+    nueva_hoja.column_dimensions[column].width = width
+
+
+
+for t in arreglo_terminos_optimos:
+    print ("termino: ", t)
+    
+
+# Eliminar corchetes y formatear el número con dos decimales
+valor_formateado = round(valor_suma_minimo, 2)
+#valor_formateado = "{:.2f}".format(valor_suma_minimo[0])
+nueva_hoja['A4'] = "Costo total del sistema [Usd]"
+nueva_hoja['B4'] = valor_formateado
+
+# Eliminar corchetes y formatear el número con dos decimales
+valor_formateado = "{:.2f}".format(arreglo_terminos_optimos[0])
+nueva_hoja['A5'] = "Costo de Inversión ET"
+nueva_hoja['B5'] = valor_formateado
+
+valor_formateado = round(arreglo_terminos_optimos[1], 1)
+nueva_hoja['A6'] = "Costo Operativo ET"
+nueva_hoja['B6'] = valor_formateado
+
+# Eliminar corchetes y formatear el número con dos decimales
+valor_formateado1 = "{:.2f}".format(arreglo_terminos_optimos[2])
+valor_formateado2 = "{:.2f}".format(arreglo_terminos_optimos[3])
+# Convertir los valores formateados a números flotantes y redondearlos
+valor_redondeado1 = round(float(valor_formateado1), 1)
+valor_redondeado2 = round(float(valor_formateado2), 1)
+# Asignar la suma de los valores redondeados a la celda B7
+nueva_hoja['A7'] = "Costo de Inversión CA"
+nueva_hoja['B7'] = valor_redondeado1 + valor_redondeado2
+
+
+valor_formateado1 = round(arreglo_terminos_optimos[4], 1)
+valor_formateado2 = round(arreglo_terminos_optimos[5], 1)
+nueva_hoja['A8'] = "Costo Operativo CA"
+nueva_hoja['B8'] = valor_formateado1 + valor_formateado2
+
+valor_formateado1 = round(arreglo_terminos_optimos[6], 1)
+valor_formateado2 = round(arreglo_terminos_optimos[7], 1)
+nueva_hoja['A9'] = "Costo de Transporte Compactadores"
+nueva_hoja['B9'] = valor_formateado1 + valor_formateado2
+
+valor_formateado = round(arreglo_terminos_optimos[8], 1)
+nueva_hoja['A10'] = "Costo de Transporte de Transferencia"
+nueva_hoja['B10'] = valor_formateado
+
+valor_formateado = round(arreglo_terminos_optimos[9], 1)
+nueva_hoja['A11'] = "Costo de Venta de material recuperado en ET"
+nueva_hoja['B11'] = valor_formateado
+
+valor_formateado = round(arreglo_terminos_optimos[10], 1)
+nueva_hoja['A12'] = "Costo de Venta de Material recuperado en CA"
+nueva_hoja['B12'] = valor_formateado
+
+
+#Comienza a imprimirse camiones
+nueva_hoja['C4'] = "Cantidad de camiones totales"
+nueva_hoja['D4'] = (primer_termino_segundaexp + segundo_termino_segundaexp + tercer_termino_segundaexp)
+
+nueva_hoja['C5'] = "Compactadores a ET [U]"
+nueva_hoja['D5'] = (primer_termino_segundaexp)
+
+nueva_hoja['C6'] = "Compactadores a CA"
+nueva_hoja['D6'] = (tercer_termino_segundaexp)
+
+nueva_hoja['C7'] = "De Transferencia"
+nueva_hoja['D7'] = (segundo_termino_segundaexp)
+
+
+#Comienza a imprimirse gases  GEI
+nueva_hoja['E4'] = "Gases GEI totales [kgCO2eq]"
+nueva_hoja['F4'] = round((primer_termino_tercerexp + segundo_termino_tercerexp + tercer_termino_tercerexp),2)
+
+nueva_hoja['E5'] = "Gases GEI compactadores (a ET)"
+nueva_hoja['F5'] = round((primer_termino_tercerexp),2)
+
+nueva_hoja['E6'] = "Gases GEI compactadores (a CA)"
+nueva_hoja['F6'] = round((tercer_termino_tercerexp),2)
+
+nueva_hoja['E7'] = "Gases GEI transferencia"
+nueva_hoja['F7'] = round((segundo_termino_tercerexp),2)
+
+
+
+
+if texto_i2 == "-":
+    frase_titulo = "REGIÓN : " + texto_region + " - Conformada por " + texto_i1
+elif texto_i3 == "-":
+    frase_titulo = "REGIÓN : " + texto_region + " - Conformada por " + texto_i1 + " y " + texto_i2
+elif texto_i4 == "-":
+    frase_titulo = "REGIÓN : " + texto_region + " - Conformada por " + texto_i1 + ", " + texto_i2 + " y " + texto_i3
+elif texto_i5 == "-":
+    frase_titulo = "REGIÓN : " + texto_region + " - Conformada por " + texto_i1 + ", " + texto_i2 + ", " + texto_i3 + " y " + texto_i4
+elif texto_i6 == "-":
+    frase_titulo = "REGIÓN : " + texto_region + " - Conformada por " + texto_i1 + ", " + texto_i2 + ", " + texto_i3 + ", " + texto_i4 + " y " + texto_i5
+elif texto_i7 == "-":
+    frase_titulo = "REGIÓN : " + texto_region + " - Conformada por " + texto_i1 + ", " + texto_i2 + ", " + texto_i3 + ", " + texto_i4 + ", " + texto_i5 + " y " + texto_i6
+else: 
+    frase_titulo = "REGIÓN : " + texto_region + " - Conformada por " + texto_i1
+
+        
+nueva_hoja['A1'] = str(frase_titulo)
+
+#Comienza a imprimirse las matrices
+nueva_hoja['A14'] = "Distribución de residuos del sistema [t/d]"
+# Obtener la celda y aplicar el formato de negrita
+celda = nueva_hoja['A14']
+celda.font = Font(bold=True)
+
 # Encontrar la última fila en la hoja
 ultima_fila = nueva_hoja.max_row     
 # Matriz de datos
@@ -693,7 +844,7 @@ encabezados_columnas = [f"J{j}" for j in range(1, len(datos_resultantes_A_texto[
 
 # Insertar encabezados de filas y columnas en la matriz de datos
 datos_con_encabezados = [
-    [None] + encabezados_columnas
+    ["Sistema Loc-ET"] + encabezados_columnas
 ] + [
     [encabezado_fila] + fila for encabezado_fila, fila in zip(encabezados_filas, datos_resultantes_A_texto)
 ]
@@ -708,7 +859,7 @@ datos_con_encabezados.append(fila_suma)
 # Escribir la matriz con encabezados y suma en la hoja del Excel
 for fila, fila_datos in enumerate(datos_con_encabezados, start=1):
     for columna, valor in enumerate(fila_datos, start=1):
-        nueva_hoja.cell(row=ultima_fila + 2 + fila, column=columna, value=str(valor))  # Convertir el valor a texto
+        nueva_hoja.cell(row=ultima_fila + 1 + fila, column=columna, value=str(valor))  # Convertir el valor a texto
 
 
 #Imprimo segunda matriz debajo de la anterior"
@@ -732,7 +883,7 @@ encabezados_columnas = [f"K{k}" for k in range(1, len(datos_resultantes_b_texto[
 
 # Insertar encabezados de filas y columnas en la matriz de datos
 datos_con_encabezados = [
-    [None] + encabezados_columnas
+    ["Sistema ET-CA"] + encabezados_columnas
 ] + [
     [encabezado_fila] + fila for encabezado_fila, fila in zip(encabezados_filas, datos_resultantes_b_texto)
 ]
@@ -747,7 +898,7 @@ datos_con_encabezados.append(fila_suma)
 # Escribir la matriz con encabezados y suma en la hoja del Excel
 for fila, fila_datos in enumerate(datos_con_encabezados, start=1):
     for columna, valor in enumerate(fila_datos, start=1):
-        nueva_hoja.cell(row=ultima_fila + 2 + fila, column=columna, value=str(valor))  # Convertir el valor a texto
+        nueva_hoja.cell(row=ultima_fila + 1 + fila, column=columna, value=str(valor))  # Convertir el valor a texto
 
 
 
@@ -774,7 +925,7 @@ encabezados_columnas = [f"K{k}" for k in range(1, len(datos_resultantes_c_texto[
 
 # Insertar encabezados de filas y columnas en la matriz de datos
 datos_con_encabezados = [
-    [None] + encabezados_columnas
+    ["Sistema ET-CA"] + encabezados_columnas
 ] + [
     [encabezado_fila] + fila for encabezado_fila, fila in zip(encabezados_filas, datos_resultantes_c_texto)
 ]
@@ -789,7 +940,7 @@ datos_con_encabezados.append(fila_suma)
 # Escribir la matriz con encabezados y suma en la hoja del Excel
 for fila, fila_datos in enumerate(datos_con_encabezados, start=1):
     for columna, valor in enumerate(fila_datos, start=1):
-        nueva_hoja.cell(row=ultima_fila + 2 + fila, column=columna, value=str(valor))  # Convertir el valor a texto
+        nueva_hoja.cell(row=ultima_fila + 1 + fila, column=columna, value=str(valor))  # Convertir el valor a texto
 
 
 
@@ -802,12 +953,14 @@ ultima_fila_con_texto = max((i for i, row in enumerate(nueva_hoja.iter_rows(), s
 ultima_fila = ultima_fila_con_texto + 2  # Dos filas de espacio
 
 # Texto a imprimir dos filas por debajo de la última fila con información
-texto_a_imprimir = 'Distribución de camiones en todo el sistema'
+texto_a_imprimir = 'Distribución de camiones en todo el sistema [u]'
+
 
 # Escribir el texto en la celda A (columna 1) dos filas por debajo de la última fila con información
-nueva_hoja.cell(row=ultima_fila + 1, column=1, value=texto_a_imprimir)
+celda = nueva_hoja.cell(row=ultima_fila + 1, column=1, value=texto_a_imprimir)
 
-
+# Aplicar el formato de negrita a la celda
+celda.font = Font(bold=True)
 
 
 # Encontrar la última fila en la hoja
@@ -831,7 +984,7 @@ encabezados_columnas = [f"J{j}" for j in range(1, len(datos_resultantes_A_texto[
 
 # Insertar encabezados de filas y columnas en la matriz de datos
 datos_con_encabezados = [
-    [None] + encabezados_columnas
+    ["Sist. Loc-ET"] + encabezados_columnas
 ] + [
     [encabezado_fila] + fila for encabezado_fila, fila in zip(encabezados_filas, datos_resultantes_A_texto)
 ]
@@ -846,7 +999,7 @@ datos_con_encabezados.append(fila_suma)
 # Escribir la matriz con encabezados y suma en la hoja del Excel
 for fila, fila_datos in enumerate(datos_con_encabezados, start=1):
     for columna, valor in enumerate(fila_datos, start=1):
-        nueva_hoja.cell(row=ultima_fila + 2 + fila, column=columna, value=str(valor))  # Convertir el valor a texto
+        nueva_hoja.cell(row=ultima_fila + 1 + fila, column=columna, value=str(valor))  # Convertir el valor a texto
         
         
         
@@ -871,7 +1024,7 @@ encabezados_columnas = [f"K{k}" for k in range(1, len(datos_resultantes_A_texto[
 
 # Insertar encabezados de filas y columnas en la matriz de datos
 datos_con_encabezados = [
-    [None] + encabezados_columnas
+    ["Sistema ET-CA"] + encabezados_columnas
 ] + [
     [encabezado_fila] + fila for encabezado_fila, fila in zip(encabezados_filas, datos_resultantes_A_texto)
 ]
@@ -886,7 +1039,7 @@ datos_con_encabezados.append(fila_suma)
 # Escribir la matriz con encabezados y suma en la hoja del Excel
 for fila, fila_datos in enumerate(datos_con_encabezados, start=1):
     for columna, valor in enumerate(fila_datos, start=1):
-        nueva_hoja.cell(row=ultima_fila + 2 + fila, column=columna, value=str(valor))  # Convertir el valor a texto    
+        nueva_hoja.cell(row=ultima_fila + 1 + fila, column=columna, value=str(valor))  # Convertir el valor a texto    
         
         
         
@@ -911,7 +1064,7 @@ encabezados_columnas = [f"K{k}" for k in range(1, len(datos_resultantes_A_texto[
 
 # Insertar encabezados de filas y columnas en la matriz de datos
 datos_con_encabezados = [
-    [None] + encabezados_columnas
+    ["Sistema Loc-CA"] + encabezados_columnas
 ] + [
     [encabezado_fila] + fila for encabezado_fila, fila in zip(encabezados_filas, datos_resultantes_A_texto)
 ]
@@ -926,101 +1079,130 @@ datos_con_encabezados.append(fila_suma)
 # Escribir la matriz con encabezados y suma en la hoja del Excel
 for fila, fila_datos in enumerate(datos_con_encabezados, start=1):
     for columna, valor in enumerate(fila_datos, start=1):
-        nueva_hoja.cell(row=ultima_fila + 2 + fila, column=columna, value=str(valor))  # Convertir el valor a texto    
+        nueva_hoja.cell(row=ultima_fila + 1 + fila, column=columna, value=str(valor))  # Convertir el valor a texto    
         
         
-
-# Encontrar la última fila con texto en la hoja de Excel
-ultima_fila_con_texto = max((i for i, row in enumerate(nueva_hoja.iter_rows(), start=1) if any(cell.value for cell in row)), default=0)
-# Calcula la posición para escribir tu información (2 filas por debajo de la última con texto)
-ultima_fila = ultima_fila_con_texto + 2  # Dos filas de espacio
-# Texto a imprimir dos filas por debajo de la última fila con información
-texto_a_imprimir = 'Distribución de Gases de Efecto Invernadero en todo el sistema'
-# Escribir el texto en la celda A (columna 1) dos filas por debajo de la última fila con información
-nueva_hoja.cell(row=ultima_fila + 1, column=1, value=texto_a_imprimir)
-
-
-# Encontrar la última fila con texto en la hoja de Excel
-ultima_fila_con_texto = max((i for i, row in enumerate(nueva_hoja.iter_rows(), start=1) if any(cell.value for cell in row)), default=0)
-# Calcula la posición para escribir tu información (2 filas por debajo de la última con texto)
-ultima_fila = ultima_fila_con_texto + 2  # Dos filas de espacio
-# Formatear la tupla como una cadena legible
-texto_formateado = f"Cantidad de GEI en kg de CO2 Equivalente para el subsistema I-J: {np.ceil(primer_termino_tercerexp)}"
-# Escribir el texto formateado en la celda A (columna 1) dos filas por debajo de la última fila con información
-nueva_hoja.cell(row=ultima_fila + 1, column=1, value=str(texto_formateado))
-
-# Encontrar la última fila con texto en la hoja de Excel
-ultima_fila_con_texto = max((i for i, row in enumerate(nueva_hoja.iter_rows(), start=1) if any(cell.value for cell in row)), default=0)
-# Calcula la posición para escribir tu información (2 filas por debajo de la última con texto)
-ultima_fila = ultima_fila_con_texto + 1  # Dos filas de espacio
-# Formatear la tupla como una cadena legible
-texto_formateado = f"Cantidad de GEI en kg de CO2 Equivalente para el subsistema J-K: {np.ceil(segundo_termino_tercerexp)}"
-# Escribir el texto formateado en la celda A (columna 1) dos filas por debajo de la última fila con información
-nueva_hoja.cell(row=ultima_fila + 1, column=1, value=str(texto_formateado))
-
-# Encontrar la última fila con texto en la hoja de Excel
-ultima_fila_con_texto = max((i for i, row in enumerate(nueva_hoja.iter_rows(), start=1) if any(cell.value for cell in row)), default=0)
-# Calcula la posición para escribir tu información (2 filas por debajo de la última con texto)
-ultima_fila = ultima_fila_con_texto + 1  # Dos filas de espacio
-# Formatear la tupla como una cadena legible
-texto_formateado = f"Cantidad de GEI en kg de CO2 Equivalente para el subsistema I-K: {np.ceil(tercer_termino_tercerexp)}"
-# Escribir el texto formateado en la celda A (columna 1) dos filas por debajo de la última fila con información
-nueva_hoja.cell(row=ultima_fila + 1, column=1, value=str(texto_formateado))  
-
-# Encontrar la última fila con texto en la hoja de Excel
-ultima_fila_con_texto = max((i for i, row in enumerate(nueva_hoja.iter_rows(), start=1) if any(cell.value for cell in row)), default=0)
-# Calcula la posición para escribir tu información (2 filas por debajo de la última con texto)
-ultima_fila = ultima_fila_con_texto + 1  # Dos filas de espacio
-# Formatear la tupla como una cadena legible
-texto_formateado = f"Cantidad de GEI en kg de CO2 Equivalente para todo el sistema: {np.ceil(primer_termino_tercerexp+segundo_termino_tercerexp+tercer_termino_tercerexp)}"
-# Escribir el texto formateado en la celda A (columna 1) dos filas por debajo de la última fila con información
-nueva_hoja.cell(row=ultima_fila + 1, column=1, value=str(texto_formateado))
-
-# Encontrar la última fila con texto en la hoja de Excel
-ultima_fila_con_texto = max((i for i, row in enumerate(nueva_hoja.iter_rows(), start=1) if any(cell.value for cell in row)), default=0)
-# Calcula la posición para escribir tu información (2 filas por debajo de la última con texto)
-ultima_fila = ultima_fila_con_texto + 1  # Dos filas de espacio
-# Formatear la tupla como una cadena legible
-texto_formateado = f"Costo total de todo el sistema: {np.ceil(valor_suma_minimo)}"
-# Escribir el texto formateado en la celda A (columna 1) dos filas por debajo de la última fila con información
-nueva_hoja.cell(row=ultima_fila + 1, column=1, value=str(texto_formateado))
-
-# Encontrar la última fila con texto en la hoja de Excel
-ultima_fila_con_texto = max((i for i, row in enumerate(nueva_hoja.iter_rows(), start=1) if any(cell.value for cell in row)), default=0)
-# Calcula la posición para escribir tu información (2 filas por debajo de la última con texto)
-ultima_fila = ultima_fila_con_texto + 1  # Dos filas de espacio
-# Formatear la tupla como una cadena legible
-texto_formateado = f"Valor final de costo de inversión de ET: {INVTSj}"
-# Escribir el texto formateado en la celda A (columna 1) dos filas por debajo de la última fila con información
-nueva_hoja.cell(row=ultima_fila + 1, column=1, value=str(texto_formateado))
-
-# Encontrar la última fila con texto en la hoja de Excel
-ultima_fila_con_texto = max((i for i, row in enumerate(nueva_hoja.iter_rows(), start=1) if any(cell.value for cell in row)), default=0)
-# Calcula la posición para escribir tu información (2 filas por debajo de la última con texto)
-ultima_fila = ultima_fila_con_texto + 1  # Dos filas de espacio
-# Formatear la tupla como una cadena legible
-texto_formateado = f"Valor final de costo operativo de ET: {OPTSj}"
-# Escribir el texto formateado en la celda A (columna 1) dos filas por debajo de la última fila con información
-nueva_hoja.cell(row=ultima_fila + 1, column=1, value=str(texto_formateado))
-
-# Encontrar la última fila con texto en la hoja de Excel
-ultima_fila_con_texto = max((i for i, row in enumerate(nueva_hoja.iter_rows(), start=1) if any(cell.value for cell in row)), default=0)
-# Calcula la posición para escribir tu información (2 filas por debajo de la última con texto)
-ultima_fila = ultima_fila_con_texto + 1  # Dos filas de espacio
-# Formatear la tupla como una cadena legible
-texto_formateado = f"Valor final de costo de inversión de CA: {INVLk}"
-# Escribir el texto formateado en la celda A (columna 1) dos filas por debajo de la última fila con información
-nueva_hoja.cell(row=ultima_fila + 1, column=1, value=str(texto_formateado))
-
-# Encontrar la última fila con texto en la hoja de Excel
-ultima_fila_con_texto = max((i for i, row in enumerate(nueva_hoja.iter_rows(), start=1) if any(cell.value for cell in row)), default=0)
-# Calcula la posición para escribir tu información (2 filas por debajo de la última con texto)
-ultima_fila = ultima_fila_con_texto + 1  # Dos filas de espacio
-# Formatear la tupla como una cadena legible
-texto_formateado = f"Valor final de costo operativo de CA: {OPLk}"
-# Escribir el texto formateado en la celda A (columna 1) dos filas por debajo de la última fila con información
-nueva_hoja.cell(row=ultima_fila + 1, column=1, value=str(texto_formateado))
         
+        
+        
+
+# Encontrar la última fila con texto en las columnas de A a F
+last_row = nueva_hoja.max_row
+
+# Aplicar borde grueso a las celdas del rango A3:F{last_row}
+for row in range(3, last_row + 1):
+    for column in ['A', 'F']:
+        cell = nueva_hoja[f'{column}{row}']
+        if column == 'A':
+            cell.border = Border(left=Side(style='thick'))
+        elif column == 'F':
+            cell.border = Border(right=Side(style='thick'))
+
+# Aplicar borde grueso a las celdas de la fila A3:F{last_row}
+for column in ['B', 'C', 'D', 'E']:
+    cell_top = nueva_hoja[f'{column}3']
+    cell_bottom = nueva_hoja[f'{column}{last_row}']
+    
+    cell_top.border = Border(top=Side(style='thick'))
+    cell_bottom.border = Border(bottom=Side(style='thick'))
+
+# Aplicar borde inferior en A(maxrow) y F(maxrow)
+cell_A_bottom = nueva_hoja[f'A{last_row}']
+cell_F_bottom = nueva_hoja[f'F{last_row}']
+
+cell_A_bottom.border = Border(left=Side(style='thick'), bottom=Side(style='thick'))
+cell_F_bottom.border = Border(right=Side(style='thick'), bottom=Side(style='thick'))
+
+# Aplicar estilo a las celdas de la columna A a la F y de la fila 1 a la 100
+for row in range(1, 101):
+    for column in ['A', 'B', 'C', 'D', 'E', 'F']:
+        cell = nueva_hoja[f'{column}{row}']
+        cell.fill = PatternFill(start_color="FFFFFF", end_color="FFFFFF", fill_type="solid")
+
+# Combina las celdas desde A1 hasta F2
+nueva_hoja.merge_cells('A1:F2')
+
+# Aplicar estilo a las celdas combinadas
+for row in nueva_hoja.iter_rows(min_row=1, max_row=2, min_col=1, max_col=6):
+    for cell in row:
+        cell.fill = PatternFill(start_color="95B3D7", end_color="95B3D7", fill_type="solid")
+        cell.font = Font(bold=True, size=16)
+        cell.border = Border(left=Side(style='thick'),
+                             right=Side(style='thick'),
+                             top=Side(style='thick'),
+                             bottom=Side(style='thick'))
+              
+
+#Iterar sobre todas las ceeldas y establecer alineación
+for row in nueva_hoja.iter_rows():
+    for cell in row:
+        cell.alignment = Alignment (horizontal='center', vertical='center')
+        
+        
+# Reemplazar I1,2,3 por nombres cargados
+
+# Define un diccionario que mapee los valores "I1", "I2", etc., con los textos deseados
+mapeo_textos = {
+    "I1": texto_i1,
+    "I2": texto_i2,
+    "I3": texto_i3,
+    "I4": texto_i4,
+    "I5": texto_i5,
+    "I6": texto_i6
+}
+
+# Itera sobre todas las celdas de la hoja
+for fila in nueva_hoja.iter_rows():
+    for celda in fila:
+        # Verifica si el valor de la celda está en el diccionario de mapeo
+        if celda.value in mapeo_textos:
+            # Reemplaza el valor de la celda con el texto correspondiente del diccionario
+            celda.value = mapeo_textos[celda.value]
+
+
+# Define un diccionario que mapee los valores "I1", "I2", etc., con los textos deseados
+mapeo_textos = {
+    "J1": "ET " + texto_i1,
+    "J2": "ET " + texto_i2,
+    "J3": "ET " + texto_i3,
+    "J4": "ET " + texto_i4,
+    "J5": "ET " + texto_i5,
+    "J6": "ET " + texto_i6
+}
+
+# Itera sobre todas las celdas de la hoja
+for fila in nueva_hoja.iter_rows():
+    for celda in fila:
+        # Verifica si el valor de la celda está en el diccionario de mapeo
+        if celda.value in mapeo_textos:
+            # Reemplaza el valor de la celda con el texto correspondiente del diccionario
+            celda.value = mapeo_textos[celda.value]
+            
+            
+            
+# Itera sobre todas las celdas de la hoja
+for fila in nueva_hoja.iter_rows():
+    for celda in fila:
+        # Verifica si el valor de la celda es "I1"
+        if celda.value == "K1":
+            # Reemplaza "I1" por el texto deseado
+            celda.value = "CA Regional"
+
+# Verifica si la hoja "Sheet" está presente en el archivo
+if 'Sheet' in nuevo_libro.sheetnames:
+    # Elimina la hoja "Sheet"
+    nuevo_libro.remove(nuevo_libro['Sheet'])
+    
+    
+# Iterar sobre todas las celdas en la hoja de cálculo
+for fila in nueva_hoja.iter_rows():
+    for celda in fila:
+        # Verificar si la celda contiene texto y si contiene un punto
+        if isinstance(celda.value, str) and "." in celda.value:
+            # Reemplazar los puntos por comas
+            celda.value = celda.value.replace(".", ",")
+    
+    
 
 # Guardar los cambios en el archivo Excel (xlsm)
 nuevo_libro.save(nombre_archivo)
